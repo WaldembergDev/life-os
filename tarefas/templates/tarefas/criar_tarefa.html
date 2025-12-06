@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Criar Tarefa{% endblock %}
+{% block content %}
+    <form action="{% url 'criar_tarefa' %}">
+        {% csrf_token %}
+        <h1 class="text-center">Criar Tarefa</h1>
+        {{ form.as_p }}
+        <input type="submit" value="Criar Tarefa">
+    </form>
+{% endblock %}
