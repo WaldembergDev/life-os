@@ -119,3 +119,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Configuração do usuário do django
+AUTH_USER_MODEL = 'core.CustomUser'
