@@ -123,3 +123,14 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Configuração do usuário do django
 AUTH_USER_MODEL = 'core.CustomUser'
+
+# django messages
+from django.contrib.messages import constants as messages
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'secondary',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
