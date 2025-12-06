@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     forms.forEach(form => {
         form.addEventListener('submit', function(event){
-            const buttons = form.querySelectorAll('button.disable-on-submit, input.disable-on-submit');
+            const buttons = form.querySelectorAll('.disable-on-submit');
 
             buttons.forEach(btn =>{
                 btn.disabled = true;

@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, render
 from .forms import TarefaForm
 from django.contrib import messages
+from .models import Tarefa
 
 # Create your views here.
 def criar_tarefa(request):
@@ -16,3 +17,10 @@ def criar_tarefa(request):
         'form': form
     }
     return render(request, 'tarefas/criar_tarefa.html', context=context)
+
+def visualizar_tarefas(request):
+    tarefas = Tarefa.objects.all()
+    context = {
+        'tarefas': tarefas
+    }
+    return render(request, 'tarefas/visualizar_tarefas.html', context=context)
