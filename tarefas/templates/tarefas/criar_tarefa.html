@@ -1,10 +1,22 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 {% block title %}Criar Tarefa{% endblock %}
 {% block content %}
-    <form action="{% url 'criar_tarefa' %}">
+    <form action="{% url 'criar_tarefa' %}" method="post" class="border rounded p-5 shadow-sm">
         {% csrf_token %}
         <h1 class="text-center">Criar Tarefa</h1>
-        {{ form.as_p }}
-        <input type="submit" value="Criar Tarefa">
+        {% for field in form %}
+            <div class="form-group mb-3">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <input type="submit" class="btn btn-primary" value="Criar Tarefa">
     </form>
 {% endblock %}
