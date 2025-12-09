@@ -88,6 +88,37 @@
       return dataFormatada
     }
 
+    function exibirDetalhesDaTarefa(json, botaoAcionador, botaoConfirmacaoElemento){
+      const isExclusao = botaoAcionador.classList.contains('abrirModalExclusao');
+      //Titulo do modal
+      const tituloModal = document.getElementById('tituloModal');
+      // corpo do modal
+      const criadoEm = document.getElementById('criadoEm');
+      const tipo = document.getElementById('tipo');
+      const status = document.getElementById('status');
+      const prazo = document.getElementById('prazo');
+      const prioridade = document.getElementById('prioridade');
+      // mostrando os dados
+      criadoEm.textContent = formatarData(json.criado_em);
+      tipo.textContent = json.tipo;
+      status.textContent = json.status;
+      if (json.prazo){
+        prazo.textContent = formatarData(json.prazo);
+      }else{
+        prazo.textContent = "Sem data";
+      }
+      
+      prioridade.textContent = json.prioridade;
+      // verificando se o botão selecionado é o de excluir modal
+      if (isExclusao){
+        tituloModal.textContent = `Confirma a exclusão da tarefa ${json.nome}?`;
+        // Exibindo o botão de exclusão
+        botaoConfirmacaoElemento.classList.replace('d-none', 'btn-danger');
+      }else{
+        tituloModal.textContent = `Detalhes da tarefa ${json.nome}`;
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', (event)=>{
       const modal = document.getElementById('modalVisualizacaoConfirmarAcao');
 
@@ -118,35 +149,7 @@
           }
         })
         .then(json =>{
-          const botaoModalExclusao = botao.classList.contains('abrirModalExclusao');
-          //Titulo do modal
-          const tituloModal = document.getElementById('tituloModal');
-          // corpo do modal
-          const criadoEm = document.getElementById('criadoEm');
-          const tipo = document.getElementById('tipo');
-          const status = document.getElementById('status');
-          const prazo = document.getElementById('prazo');
-          const prioridade = document.getElementById('prioridade');
-          // mostrando os dados
-          criadoEm.textContent = formatarData(json.criado_em);
-          tipo.textContent = json.tipo;
-          status.textContent = json.status;
-          if (json.prazo){
-            prazo.textContent = formatarData(json.prazo);
-          }else{
-            prazo.textContent = "Sem data";
-          }
-          
-          prioridade.textContent = json.prioridade;
-          // verificando se o botão selecionado é o de excluir modal
-          if (botaoModalExclusao){
-            tituloModal.textContent = `Confirma a exclusão da tarefa ${json.nome}?`;
-            // Exibindo o botão de exclusão
-            botaoVisualizarConfirmarAcao.classList.replace('d-none', 'btn-primary')
-          }else{
-            tituloModal.textContent = `Detalhes da tarefa ${json.nome}`;
-          }
-          
+          exibirDetalhesDaTarefa(json, botao, botaoVisualizarConfirmarAcao);
         })
         .catch(error =>{
           console.log('Erro durante a requisição ', error);
@@ -154,7 +157,7 @@
         
         botaoVisualizarConfirmarAcao.addEventListener('click', function(){
           window.location.href = `/tarefas/excluir-tarefa/${idTarefa}`;
-        })
+        }, { once: true })
       })
     });
   </script>
