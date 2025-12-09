@@ -26,9 +26,10 @@
         <td>{% if tarefa.com_lembrete %}Sim{% else %}Não{% endif %}</td>
         <td >
             <div class="d-flex gap-1">
-            <a href="#" class="btn btn-primary"><i class="bi bi-eye-fill"></i></a>
+            <a href="#" class="btn btn-primary" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao">
+              <i class="bi bi-eye-fill"></i></a>
             <a href="#" class="btn btn-success"><i class="bi bi-pencil-fill"></i></a>
-            <a href="#" class="btn btn-danger disable-on-submit openModal" data-tarefa-id='{{ tarefa.id }}' data-bs-toggle="modal" data-bs-target="#confirmActionModal">
+            <a href="#" class="btn btn-danger disable-on-submit abrirModalExclusao" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao">
               <i class="bi bi-x-circle-fill"></i>
             </a>
             </div>
@@ -36,70 +37,120 @@
       </tr>
       {% empty %}
       <tr>
-        <td colspan=4>Não existem tarefas cadastradas com as especificações selecionadas</td>
+        <td colspan=7 class="text-center">Não existem tarefas cadastradas com as especificações selecionadas</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 
-<!-- Modal Bootstrap -->
-<div class="modal fade" id="confirmActionModal" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmação de Exclusão</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>Confirma a exclusão da tarefa <strong><span id="tituloTarefa"></span></strong>?</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary" id="confirmButton" data-confirmar-id>Confirmar</button>
+  <!-- Modal Visualização e Confirmação de Exclusão-->
+  <div class="modal fade" id="modalVisualizacaoConfirmarAcao" tabindex="-1" aria-labelledby="confirmarAcao" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="tituloModal"></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Criado em: <strong id="criadoEm"></strong></p>
+          <p>Tipo: <strong id="tipo"></strong></p>
+          <p>Status: <strong id="status"></strong></p>
+          <p>Prazo: <strong id="prazo"></strong></p>
+          <p>Prioridade: <strong id="prioridade"></strong></p>
+          
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          <button type="button" class="d-none btn" id="botaoVisualizarConfirmarAcao">Excluir</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-{% csrf_token %}
-<script>
-  document.addEventListener('DOMContentLoaded', (event)=>{
-    // Selecionando o modal
-    const confirmActionModal = document.getElementById('confirmActionModal');
-    confirmActionModal.addEventListener('show.bs.modal', function(event){
-  
-      const botao = event.relatedTarget;
-      const idTarefa = botao.dataset.tarefaId;
-      const confirmButton = confirmActionModal.querySelector('#confirmButton');
-      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-      const urlConsultaDados = `/tarefas/api-consultar-tarefa/${idTarefa}`
-      const corpoModal = document.getElementById('tituloTarefa');
-      // Realizando realizando requisição para obter os dados
-      fetch(urlConsultaDados, {
-        headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken
-        },
+
+  {% csrf_token %}
+
+  <script>
+    function formatarData(dataApi){
+      const data = new Date(dataApi);
+      const opcoesDeData = {
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric',  
+        hour: '2-digit',  
+        minute: '2-digit',
+        hour12: false,  
+        timeZone: 'America/Sao_Paulo' 
+      };
+      const formatador = new Intl.DateTimeFormat('pt-BR', opcoesDeData);
+      const dataFormatada = formatador.format(data);
+      return dataFormatada
+    }
+
+    document.addEventListener('DOMContentLoaded', (event)=>{
+      const modal = document.getElementById('modalVisualizacaoConfirmarAcao');
+
+      modal.addEventListener('shown.bs.modal', (event)=>{
+        // Botão que acionou o modal
+        const botao = event.relatedTarget;
+        // obtendo csrf_token
+        const csrf_token = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        // extraindo informações 
+        const idTarefa = botao.dataset.tarefaId;
+        // urls
+        const urlConsultaDados = `/tarefas/api-consultar-tarefa/${idTarefa}`;
+        const urlExcluirTarefa = `/tarefas/exluir-tarefa/${idTarefa}`;
+        // botão de confirmação
+        const botaoVisualizarConfirmarAcao = document.getElementById('botaoVisualizarConfirmarAcao')
+
+        fetch(urlConsultaDados, {
+          headers: {
+              'Content-Type': 'application/json', 
+              'X-CSRFToken': csrf_token,
+          }
+        })
+        .then(response =>{
+          if (response.ok){
+            return response.json();
+          }else{
+            alert('Erro ao fazer requisição!');
+          }
+        })
+        .then(json =>{
+          const botaoModalExclusao = botao.classList.contains('abrirModalExclusao');
+          //Titulo do modal
+          const tituloModal = document.getElementById('tituloModal');
+          // corpo do modal
+          const criadoEm = document.getElementById('criadoEm');
+          const tipo = document.getElementById('tipo');
+          const status = document.getElementById('status');
+          const prazo = document.getElementById('prazo');
+          const prioridade = document.getElementById('prioridade');
+          // mostrando os dados
+          criadoEm.textContent = formatarData(json.criado_em);
+          tipo.textContent = json.tipo;
+          status.textContent = json.status;
+          prazo.textContent = formatarData(json.prazo);
+          prioridade.textContent = json.prioridade;
+          // verificando se o botão selecionado é o de excluir modal
+          if (botaoModalExclusao){
+            tituloModal.textContent = `Confirma a exclusão da tarefa ${json.nome}?`;
+            // Exibindo o botão de exclusão
+            botaoVisualizarConfirmarAcao.classList.replace('d-none', 'btn-primary')
+          }else{
+            tituloModal.textContent = `Detalhes da tarefa ${json.nome}`;
+          }
+          
+        })
+        .catch(error =>{
+          console.log('Erro durante a requisição ', error);
+        });
+        
+        botaoVisualizarConfirmarAcao.addEventListener('click', function(){
+          window.location.href = `/tarefas/excluir-tarefa/${idTarefa}`;
+        })
       })
-      .then(response =>{
-        if (response.ok){
-          return response.json();
-        }else{
-          alert('Erro ao fazer requisição!');
-        }
-      })
-      .then(json =>{
-        corpoModal.textContent = json.nome;
-      })
-      .catch(error =>{
-        console.log(error);
-      })
-      
-      // Caso clique no botão confirmar exclusão
-      confirmButton.onclick = function(){
-        window.location.href = `/tarefas/exluir-tarefa/${idTarefa}`
-      }
-    })
-  })
-</script>
+    });
+  </script>
 {% endblock %}
