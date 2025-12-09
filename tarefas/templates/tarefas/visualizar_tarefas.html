@@ -23,12 +23,12 @@
         <td>{{ tarefa.nome }}</td>
         <td>{{ tarefa.status }}</td>
         <td>{{ tarefa.prazo }}</td>
-        <td>{{ tarefa.possui_lembrete|default:"Não" }}</td>
+        <td>{% if tarefa.com_lembrete %}Sim{% else %}Não{% endif %}</td>
         <td >
             <div class="d-flex gap-1">
             <a href="#" class="btn btn-primary"><i class="bi bi-eye-fill"></i></a>
             <a href="#" class="btn btn-success"><i class="bi bi-pencil-fill"></i></a>
-            <a href="{% url 'excluir_tarefa' tarefa.id %}" class="btn btn-danger disable-on-submit">
+            <a href="#" class="btn btn-danger disable-on-submit openModal" data-tarefa-id='{{ tarefa.id }}' data-bs-toggle="modal" data-bs-target="#confirmActionModal">
               <i class="bi bi-x-circle-fill"></i>
             </a>
             </div>
@@ -41,4 +41,65 @@
       {% endfor %}
     </tbody>
   </table>
+
+<!-- Modal Bootstrap -->
+<div class="modal fade" id="confirmActionModal" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmação de Exclusão</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Confirma a exclusão da tarefa <strong><span id="tituloTarefa"></span></strong>?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="confirmButton" data-confirmar-id>Confirmar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% csrf_token %}
+<script>
+  document.addEventListener('DOMContentLoaded', (event)=>{
+    // Selecionando o modal
+    const confirmActionModal = document.getElementById('confirmActionModal');
+    confirmActionModal.addEventListener('show.bs.modal', function(event){
+  
+      const botao = event.relatedTarget;
+      const idTarefa = botao.dataset.tarefaId;
+      const confirmButton = confirmActionModal.querySelector('#confirmButton');
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      const urlConsultaDados = `/tarefas/api-consultar-tarefa/${idTarefa}`
+      const corpoModal = document.getElementById('tituloTarefa');
+      // Realizando realizando requisição para obter os dados
+      fetch(urlConsultaDados, {
+        headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+        },
+      })
+      .then(response =>{
+        if (response.ok){
+          return response.json();
+        }else{
+          alert('Erro ao fazer requisição!');
+        }
+      })
+      .then(json =>{
+        corpoModal.textContent = json.nome;
+      })
+      .catch(error =>{
+        console.log(error);
+      })
+      
+      // Caso clique no botão confirmar exclusão
+      confirmButton.onclick = function(){
+        window.location.href = `/tarefas/exluir-tarefa/${idTarefa}`
+      }
+    })
+  })
+</script>
 {% endblock %}
