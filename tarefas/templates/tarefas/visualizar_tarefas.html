@@ -22,7 +22,7 @@
         <td>{{ tarefa.tipo }}</td>
         <td>{{ tarefa.nome }}</td>
         <td>{{ tarefa.status }}</td>
-        <td>{{ tarefa.prazo }}</td>
+        <td>{{ tarefa.prazo|default:"Sem data" }}</td>
         <td>{% if tarefa.com_lembrete %}Sim{% else %}Não{% endif %}</td>
         <td >
             <div class="d-flex gap-1">
@@ -131,7 +131,12 @@
           criadoEm.textContent = formatarData(json.criado_em);
           tipo.textContent = json.tipo;
           status.textContent = json.status;
-          prazo.textContent = formatarData(json.prazo);
+          if (json.prazo){
+            prazo.textContent = formatarData(json.prazo);
+          }else{
+            prazo.textContent = "Sem data";
+          }
+          
           prioridade.textContent = json.prioridade;
           // verificando se o botão selecionado é o de excluir modal
           if (botaoModalExclusao){
