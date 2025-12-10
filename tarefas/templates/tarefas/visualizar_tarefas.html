@@ -69,9 +69,10 @@
 
   <div class="modal fade" id="modalEdicaoTarefa" tabindex="-1" aria-labelledby="modalEdicaoTarefa" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <form id="formEdicaoTarefa" action="#" data-url-base="/tarefas/editar-tarefa/" method="POST">
-        {% csrf_token %}
+      
       <div class="modal-content">
+        <form id="formEdicaoTarefa" action="#" data-url-base="/tarefas/editar-tarefa/" method="POST">
+        {% csrf_token %}
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="tituloModalEdicao">Edição de tarefa</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -84,9 +85,9 @@
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
           <button type="submit" class="btn btn-success" id="botaoEditarTarefa">Confirmar Alterações</button>
         </div>
-        
+        </form>
       </div>
-    </form>
+    
     </div>
   </div>
 
@@ -165,15 +166,15 @@
     // Função para preencher o formulário (Edição)
     function preencherFormularioEdicao(json, formElement) {
         // Preenche cada campo do formulário com o JSON retornado
-
-        // Exemplo de preenchimento de campos
+        formElement.querySelector('#id_tipo').value = json.tipo
+        formElement.querySelector('#id_prioridade').value = json.prioridade
         if (json.nome) formElement.querySelector('#id_nome').value = json.nome;
         if (json.status) formElement.querySelector('#id_status').value = json.status;
-        // Campos de data/hora exigem tratamento especial para formatos HTML:
-        // if (json.prazo) formElement.querySelector('#id_prazo').value = json.prazo;
-        
-        // Você precisará mapear todos os campos do seu formulário aqui!
-        
+        if (json.prazo){
+          formElement.querySelector('#id_prazo').value = json.prazo;
+        } else{
+          formElement.querySelector('#id_prazo').value = ""
+        }        
         document.getElementById('tituloModalEdicao').textContent = `Editando: ${json.nome}`;
     }
 
