@@ -68,6 +68,31 @@
     </div>
   </div>
 
+  <!-- Modal Edição-->
+  <div class="modal fade" id="modalVisualizacaoConfirmarAcao" tabindex="-1" aria-labelledby="confirmarAcao" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="tituloModal"></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Criado em: <strong id="criadoEm"></strong></p>
+          <p>Tipo: <strong id="tipo"></strong></p>
+          <p>Status: <strong id="status"></strong></p>
+          <p>Prazo: <strong id="prazo"></strong></p>
+          <p>Prioridade: <strong id="prioridade"></strong></p>
+          
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          <button type="button" class="d-none btn" id="botaoVisualizarConfirmarAcao">Excluir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   {% csrf_token %}
 
@@ -90,7 +115,7 @@
 
     function exibirDetalhesDaTarefa(json, botaoAcionador, botaoConfirmacaoElemento){
       const isExclusao = botaoAcionador.classList.contains('abrirModalExclusao');
-      //Titulo do modal
+      //Titulo do modal 
       const tituloModal = document.getElementById('tituloModal');
       // corpo do modal
       const criadoEm = document.getElementById('criadoEm');
@@ -109,13 +134,18 @@
       }
       
       prioridade.textContent = json.prioridade;
+
+      botaoConfirmacaoElemento.classList.remove('btn-danger');
       // verificando se o botão selecionado é o de excluir modal
       if (isExclusao){
         tituloModal.textContent = `Confirma a exclusão da tarefa ${json.nome}?`;
         // Exibindo o botão de exclusão
-        botaoConfirmacaoElemento.classList.replace('d-none', 'btn-danger');
+        botaoConfirmacaoElemento.classList.remove('d-none');
+        botaoConfirmacaoElemento.classList.add('btn-danger')
+        botaoConfirmacaoElemento.textContent = "Excluir";
       }else{
         tituloModal.textContent = `Detalhes da tarefa ${json.nome}`;
+        botaoConfirmacaoElemento.classList.add('d-none');
       }
     }
 
