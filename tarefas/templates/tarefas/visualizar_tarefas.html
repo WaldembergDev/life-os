@@ -12,7 +12,6 @@
         <th scope="col">Prazo</th>
         <th scope="col">Possui Lembrete?</th>
         <th scope="col">Ações</th>
-
       </tr>
     </thead>
     <tbody>
@@ -26,9 +25,12 @@
         <td>{% if tarefa.com_lembrete %}Sim{% else %}Não{% endif %}</td>
         <td >
             <div class="d-flex gap-1">
-            <a href="#" class="btn btn-primary" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao">
-              <i class="bi bi-eye-fill"></i></a>
-            <a href="#" class="btn btn-success"><i class="bi bi-pencil-fill"></i></a>
+            <a href="#" class="btn btn-primary disable-on-submit" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao">
+              <i class="bi bi-eye-fill"></i>
+            </a>
+            <a href="#" class="btn btn-success" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalEdicaoTarefa">
+              <i class="bi bi-pencil-fill"></i>
+            </a>
             <a href="#" class="btn btn-danger disable-on-submit abrirModalExclusao" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao">
               <i class="bi bi-x-circle-fill"></i>
             </a>
@@ -43,7 +45,6 @@
     </tbody>
   </table>
 
-  <!-- Modal Visualização e Confirmação de Exclusão-->
   <div class="modal fade" id="modalVisualizacaoConfirmarAcao" tabindex="-1" aria-labelledby="confirmarAcao" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -57,8 +58,6 @@
           <p>Status: <strong id="status"></strong></p>
           <p>Prazo: <strong id="prazo"></strong></p>
           <p>Prioridade: <strong id="prioridade"></strong></p>
-          
-
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -68,35 +67,36 @@
     </div>
   </div>
 
-  <!-- Modal Edição-->
-  <div class="modal fade" id="modalVisualizacaoConfirmarAcao" tabindex="-1" aria-labelledby="confirmarAcao" aria-hidden="true">
+  <div class="modal fade" id="modalEdicaoTarefa" tabindex="-1" aria-labelledby="modalEdicaoTarefa" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
+      <form id="formEdicaoTarefa" action="#" data-url-base="/tarefas/editar-tarefa/" method="POST">
+        {% csrf_token %}
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="tituloModal"></h1>
+          <h1 class="modal-title fs-5" id="tituloModalEdicao">Edição de tarefa</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+        
         <div class="modal-body">
-          <p>Criado em: <strong id="criadoEm"></strong></p>
-          <p>Tipo: <strong id="tipo"></strong></p>
-          <p>Status: <strong id="status"></strong></p>
-          <p>Prazo: <strong id="prazo"></strong></p>
-          <p>Prioridade: <strong id="prioridade"></strong></p>
-          
-
+            {{ form }}          
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-          <button type="button" class="d-none btn" id="botaoVisualizarConfirmarAcao">Excluir</button>
+          <button type="submit" class="btn btn-success" id="botaoEditarTarefa">Confirmar Alterações</button>
         </div>
+        
       </div>
+    </form>
     </div>
   </div>
-
 
   {% csrf_token %}
 
   <script>
+    // Variável global para o token CSRF (lido uma vez)
+    const CSRF_TOKEN = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    // Funções Auxiliares
     function formatarData(dataApi){
       const data = new Date(dataApi);
       const opcoesDeData = {
@@ -109,86 +109,134 @@
         timeZone: 'America/Sao_Paulo' 
       };
       const formatador = new Intl.DateTimeFormat('pt-BR', opcoesDeData);
-      const dataFormatada = formatador.format(data);
-      return dataFormatada
+      return formatador.format(data);
+    }
+    
+    // Função Centralizada para FETCH
+    function consultarDadosTarefa(idTarefa) {
+      const urlConsulta = `/tarefas/api-consultar-tarefa/${idTarefa}`;
+      
+      return fetch(urlConsulta, {
+        headers: {
+            'Content-Type': 'application/json', 
+            'X-CSRFToken': CSRF_TOKEN,
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erro ao fazer requisição: ' + response.statusText);
+        }
+        return response.json();
+      });
     }
 
+    // --- Lógica de Visualização e Exclusão ---
+    
     function exibirDetalhesDaTarefa(json, botaoAcionador, botaoConfirmacaoElemento){
       const isExclusao = botaoAcionador.classList.contains('abrirModalExclusao');
-      //Titulo do modal 
       const tituloModal = document.getElementById('tituloModal');
-      // corpo do modal
-      const criadoEm = document.getElementById('criadoEm');
-      const tipo = document.getElementById('tipo');
-      const status = document.getElementById('status');
-      const prazo = document.getElementById('prazo');
-      const prioridade = document.getElementById('prioridade');
-      // mostrando os dados
-      criadoEm.textContent = formatarData(json.criado_em);
-      tipo.textContent = json.tipo;
-      status.textContent = json.status;
-      if (json.prazo){
-        prazo.textContent = formatarData(json.prazo);
-      }else{
-        prazo.textContent = "Sem data";
-      }
       
-      prioridade.textContent = json.prioridade;
+      // Mapeamento dos campos
+      document.getElementById('criadoEm').textContent = formatarData(json.criado_em);
+      document.getElementById('tipo').textContent = json.tipo;
+      document.getElementById('status').textContent = json.status;
+      document.getElementById('prioridade').textContent = json.prioridade;
 
-      botaoConfirmacaoElemento.classList.remove('btn-danger');
-      // verificando se o botão selecionado é o de excluir modal
+      if (json.prazo){
+        document.getElementById('prazo').textContent = formatarData(json.prazo);
+      }else{
+        document.getElementById('prazo').textContent = "Sem data";
+      }
+
+      // Lógica Condicional (Exclusão vs. Visualização)
       if (isExclusao){
         tituloModal.textContent = `Confirma a exclusão da tarefa ${json.nome}?`;
-        // Exibindo o botão de exclusão
-        botaoConfirmacaoElemento.classList.remove('d-none');
-        botaoConfirmacaoElemento.classList.add('btn-danger')
+        botaoConfirmacaoElemento.classList.replace('d-none', 'btn-danger');
         botaoConfirmacaoElemento.textContent = "Excluir";
       }else{
         tituloModal.textContent = `Detalhes da tarefa ${json.nome}`;
         botaoConfirmacaoElemento.classList.add('d-none');
+        botaoConfirmacaoElemento.classList.remove('btn-danger');
       }
     }
+    
+    // --- Lógica de Edição ---
+
+    // Função para preencher o formulário (Edição)
+    function preencherFormularioEdicao(json, formElement) {
+        // Preenche cada campo do formulário com o JSON retornado
+
+        // Exemplo de preenchimento de campos
+        if (json.nome) formElement.querySelector('#id_nome').value = json.nome;
+        if (json.status) formElement.querySelector('#id_status').value = json.status;
+        // Campos de data/hora exigem tratamento especial para formatos HTML:
+        // if (json.prazo) formElement.querySelector('#id_prazo').value = json.prazo;
+        
+        // Você precisará mapear todos os campos do seu formulário aqui!
+        
+        document.getElementById('tituloModalEdicao').textContent = `Editando: ${json.nome}`;
+    }
+
+    // --- Event Listeners Principais ---
 
     document.addEventListener('DOMContentLoaded', (event)=>{
-      const modal = document.getElementById('modalVisualizacaoConfirmarAcao');
+      const modalVisualizacao = document.getElementById('modalVisualizacaoConfirmarAcao');
+      const botaoAcao = document.getElementById('botaoVisualizarConfirmarAcao');
 
-      modal.addEventListener('shown.bs.modal', (event)=>{
-        // Botão que acionou o modal
+      // 1. OTIMIZAÇÃO: Listener para LIMPEZA IMEDIATA (Anti-Flicker)
+      modalVisualizacao.addEventListener('show.bs.modal', (event) => {
+          // Garante que o botão de exclusão esteja escondido ANTES da animação
+          botaoAcao.classList.add('d-none');
+          botaoAcao.classList.remove('btn-danger');
+          
+          // Anexa o listener de exclusão AQUI (para ter acesso ao idTarefa correto)
+          const botao = event.relatedTarget;
+          const idTarefa = botao.dataset.tarefaId;
+
+          botaoAcao.onclick = function() {
+             window.location.href = `/tarefas/excluir-tarefa/${idTarefa}`;
+          };
+      });
+
+
+      // 2. Listener para PROCESSAMENTO (Fetch de Dados)
+      modalVisualizacao.addEventListener('shown.bs.modal', (event)=>{
         const botao = event.relatedTarget;
-        // obtendo csrf_token
-        const csrf_token = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        // extraindo informações 
         const idTarefa = botao.dataset.tarefaId;
-        // urls
-        const urlConsultaDados = `/tarefas/api-consultar-tarefa/${idTarefa}`;
-        const urlExcluirTarefa = `/tarefas/exluir-tarefa/${idTarefa}`;
-        // botão de confirmação
-        const botaoVisualizarConfirmarAcao = document.getElementById('botaoVisualizarConfirmarAcao')
 
-        fetch(urlConsultaDados, {
-          headers: {
-              'Content-Type': 'application/json', 
-              'X-CSRFToken': csrf_token,
-          }
-        })
-        .then(response =>{
-          if (response.ok){
-            return response.json();
-          }else{
-            alert('Erro ao fazer requisição!');
-          }
-        })
+        consultarDadosTarefa(idTarefa)
         .then(json =>{
-          exibirDetalhesDaTarefa(json, botao, botaoVisualizarConfirmarAcao);
+          exibirDetalhesDaTarefa(json, botao, botaoAcao);
         })
         .catch(error =>{
           console.log('Erro durante a requisição ', error);
+          alert('Falha ao carregar detalhes da tarefa.');
         });
         
-        botaoVisualizarConfirmarAcao.addEventListener('click', function(){
-          window.location.href = `/tarefas/excluir-tarefa/${idTarefa}`;
-        }, { once: true })
-      })
+      });
+
+      // 3. Listener para Modal de Edição
+      const modalEdicao = document.getElementById('modalEdicaoTarefa');
+      const formEdicao = document.getElementById('formEdicaoTarefa');
+
+      modalEdicao.addEventListener('shown.bs.modal', (event)=>{
+        const botao = event.relatedTarget;
+        const tarefaId = botao.dataset.tarefaId;
+        
+        // 3a. Ajustar a URL de Ação do Formulário
+        const urlBase = formEdicao.dataset.urlBase;
+        formEdicao.action = `${urlBase}${tarefaId}/`;
+
+        // 3b. Fetch e Preenchimento
+        consultarDadosTarefa(tarefaId)
+        .then(json => {
+            preencherFormularioEdicao(json, formEdicao);
+        })
+        .catch(error => {
+            console.log('Erro durante a requisição de edição: ', error);
+            alert('Falha ao carregar dados da tarefa para edição.');
+        });
+      });
     });
   </script>
 {% endblock %}

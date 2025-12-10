@@ -13,4 +13,3 @@ class TarefaForm(forms.ModelForm):
             'prazo': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'com_lembrete': forms.CheckboxInput(attrs={'class': 'form-check-input'})
         }
-

@@ -22,7 +22,8 @@ def criar_tarefa(request):
 def visualizar_tarefas(request):
     tarefas = Tarefa.objects.all()
     context = {
-        'tarefas': tarefas
+        'tarefas': tarefas,
+        'form': TarefaForm()
     }
     return render(request, 'tarefas/visualizar_tarefas.html', context=context)
 
@@ -44,3 +45,26 @@ def api_consultar_tarefa(request, id_tarefa):
         'com_lembrete': tarefa.com_lembrete
     }
     return JsonResponse(dados)
+
+def editar_tarefa(request, id_tarefa):
+    # 1. Recuperar a instância da Tarefa
+    tarefa = get_object_or_404(Tarefa, id=id_tarefa)
+
+    if request.method == 'POST':
+        # 2. POST: Passa request.POST E a instância da tarefa sendo editada
+        form = TarefaForm(request.POST, instance=tarefa)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Tarefa "{tarefa.nome}" atualizada com sucesso!')
+            
+            return redirect('visualizar_tarefas') 
+            
+    else:
+        form = TarefaForm(instance=tarefa) 
+
+    context = {
+        'form': form,
+        'tarefa': tarefa
+    }
+    return render(request, 'tarefas/criar_tarefa.html', context)
