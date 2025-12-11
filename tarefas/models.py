@@ -6,10 +6,8 @@ class TipoEnum(models.TextChoices):
 
 class PrioridadeEnum(models.TextChoices):
     URGENTE = 'URGENTE', 'Urgente'
-    ALTO = 'ALTO', 'Alto'
     NORMAL = 'NORMAL', 'Normal'
     BAIXO = 'BAIXO', 'Baixo'
-    PLANEJADO = 'PLANEJADO', 'Planejado'
 
 class StatusEnum(models.TextChoices):
     PENDENTE = 'PENDENTE', 'Pendente'

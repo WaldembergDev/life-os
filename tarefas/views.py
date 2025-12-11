@@ -1,8 +1,9 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from .forms import TarefaForm
 from django.contrib import messages
-from .models import Tarefa
+from .models import PrioridadeEnum, Tarefa
 from django.http import JsonResponse
+from django.db.models import Case, When, IntegerField, Value
 
 # Create your views here.
 def criar_tarefa(request):
@@ -20,7 +21,17 @@ def criar_tarefa(request):
     return render(request, 'tarefas/criar_tarefa.html', context=context)
 
 def visualizar_tarefas(request):
-    tarefas = Tarefa.objects.all()
+    # ordenando do vencimento mais próximo para o mais antigo e urgência
+    tarefas = Tarefa.objects.annotate(
+        tarefa_classificada = Case(
+            When(prioridade=PrioridadeEnum.URGENTE, then=1),
+            When(prioridade=PrioridadeEnum.NORMAL, then=2),
+            When(prioridade=PrioridadeEnum.BAIXO, then=3),
+            When(prazo__isnull=False, then=4),
+            default=5,
+            output_field=IntegerField()
+        )
+    ).order_by('tarefa_classificada', 'prazo')
     context = {
         'tarefas': tarefas,
         'form': TarefaForm()
@@ -47,17 +58,14 @@ def api_consultar_tarefa(request, id_tarefa):
     return JsonResponse(dados)
 
 def editar_tarefa(request, id_tarefa):
-    # 1. Recuperar a instância da Tarefa
     tarefa = get_object_or_404(Tarefa, id=id_tarefa)
 
     if request.method == 'POST':
-        # 2. POST: Passa request.POST E a instância da tarefa sendo editada
         form = TarefaForm(request.POST, instance=tarefa)
 
         if form.is_valid():
             form.save()
             messages.success(request, f'Tarefa "{tarefa.nome}" atualizada com sucesso!')
-            
             return redirect('visualizar_tarefas') 
             
     else:
