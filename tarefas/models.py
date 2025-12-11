@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 class TipoEnum(models.TextChoices):
     PESSOAL = 'PESSOAL', 'Pessoal'
@@ -21,11 +22,20 @@ class Tarefa(models.Model):
     nome = models.CharField(max_length=120)
     prioridade =models.CharField(max_length=9, choices=PrioridadeEnum.choices, default=PrioridadeEnum.NORMAL)
     status = models.CharField(max_length=9, choices=StatusEnum.choices, default=StatusEnum.PENDENTE)
+    concluido_em = models.DateTimeField(null=True, blank=True)
     prazo = models.DateField(null=True, blank=True)
     com_lembrete = models.BooleanField(default=True)
 
     def __str__(self):
         return self.nome
+    
+    def save(self, *args, **kwargs):
+        if self.status == StatusEnum.CONCLUIDO:
+            if not self.concluido_em:
+                self.concluido_em = timezone.now()
+        else:
+            self.concluido_em = None
+        super(Tarefa, self).save(*args, *kwargs)
 
 class Comentario(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)

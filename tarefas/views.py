@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from .forms import TarefaForm
 from django.contrib import messages
-from .models import PrioridadeEnum, Tarefa
+from .models import PrioridadeEnum, StatusEnum, Tarefa
 from django.http import JsonResponse
 from django.db.models import Case, When, IntegerField, Value
 
@@ -53,7 +53,8 @@ def api_consultar_tarefa(request, id_tarefa):
         'prioridade':tarefa.prioridade,
         'status': tarefa.status,
         'prazo': tarefa.prazo,
-        'com_lembrete': tarefa.com_lembrete
+        'com_lembrete': tarefa.com_lembrete,
+        'concluido_em': tarefa.concluido_em
     }
     return JsonResponse(dados)
 
@@ -76,3 +77,10 @@ def editar_tarefa(request, id_tarefa):
         'tarefa': tarefa
     }
     return render(request, 'tarefas/criar_tarefa.html', context)
+
+def concluir_tarefa(request, id_tarefa):
+    tarefa = get_object_or_404(Tarefa, id=id_tarefa)
+    tarefa.status = StatusEnum.CONCLUIDO
+    tarefa.save()
+    messages.success(request, 'Tarefa marcada com status concluída')
+    return redirect('visualizar_tarefas')

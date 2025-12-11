@@ -24,11 +24,14 @@
         <td>{{ tarefa.prazo|default:"Sem data" }}</td>
         <td>{% if tarefa.com_lembrete %}Sim{% else %}Não{% endif %}</td>
         <td >
-            <div class="d-flex gap-1">
+            <div class="d-flex gap-1">  
+            <a href="{% url 'concluir_tarefa' tarefa.id %}" class="btn btn-success disable-on-submit">
+              <i class="bi bi-check-circle-fill"></i>
+            </a>
             <a href="#" class="btn btn-primary disable-on-submit" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao">
               <i class="bi bi-eye-fill"></i>
             </a>
-            <a href="#" class="btn btn-success" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalEdicaoTarefa">
+            <a href="#" class="btn btn-secondary" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalEdicaoTarefa">
               <i class="bi bi-pencil-fill"></i>
             </a>
             <a href="#" class="btn btn-danger disable-on-submit abrirModalExclusao" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao">
@@ -58,6 +61,7 @@
           <p>Status: <strong id="status"></strong></p>
           <p>Prazo: <strong id="prazo"></strong></p>
           <p>Prioridade: <strong id="prioridade"></strong></p>
+          <p>Concluído em: <strong id="concluidoEm"></strong></p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -142,6 +146,12 @@
       document.getElementById('tipo').textContent = json.tipo;
       document.getElementById('status').textContent = json.status;
       document.getElementById('prioridade').textContent = json.prioridade;
+
+      if (json.concluido_em){
+        document.getElementById('concluidoEm').textContent = formatarData(json.concluido_em);
+      }else{
+        document.getElementById('prazo').textContent = "Sem data";
+      }
 
       if (json.prazo){
         document.getElementById('prazo').textContent = formatarData(json.prazo);
