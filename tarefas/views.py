@@ -4,6 +4,9 @@ from django.contrib import messages
 from .models import PrioridadeEnum, StatusEnum, Tarefa
 from django.http import JsonResponse
 from django.db.models import Case, When, IntegerField, Value
+from .models import StatusEnum
+from .utils import obter_string_status_enum
+from django.urls import reverse
 
 # Create your views here.
 def criar_tarefa(request):
@@ -23,7 +26,9 @@ def criar_tarefa(request):
     return render(request, 'tarefas/criar_tarefa.html', context=context)
 
 def visualizar_tarefas(request):
+    status = request.GET.get('status')
     # ordenando do vencimento mais próximo para o mais antigo e urgência
+
     tarefas = Tarefa.objects.annotate(
         tarefa_classificada = Case(
             When(prioridade=PrioridadeEnum.URGENTE, then=1),
@@ -34,6 +39,11 @@ def visualizar_tarefas(request):
             output_field=IntegerField()
         )
     ).order_by('tarefa_classificada', 'prazo')
+
+    # verificando se existe um status válido selecionado
+    if status and (obter_string_status_enum(status) is not None):
+        tarefas = tarefas.filter(status=obter_string_status_enum(status))
+
     context = {
         'tarefas': tarefas,
         'form': TarefaForm()
@@ -85,4 +95,4 @@ def concluir_tarefa(request, id_tarefa):
     tarefa.status = StatusEnum.CONCLUIDO
     tarefa.save()
     messages.success(request, 'Tarefa marcada com status concluída')
-    return redirect('visualizar_tarefas')
+    return redirect(reverse('visualizar_tarefas'))

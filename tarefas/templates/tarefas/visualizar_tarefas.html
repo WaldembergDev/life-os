@@ -2,6 +2,11 @@
 {% block title %}Visualizar tarefas{% endblock %}
 {% block content %}
   <h1 class="text-center">Visualização de Tarefas</h1>
+  <div>
+    <a {% if request.GET.status == 'pendente' %}class="btn btn-secondary" {% else %}class="btn btn-outline-secondary"{% endif %} href="?status=pendente">Pendentes</a>
+    <a {% if request.GET.status == 'andamento' %} class="btn btn-primary"{% else %} class="btn btn-outline-primary" {% endif %} href="?status=andamento">Andamento</a>
+    <a {% if request.GET.status == 'concluido' %} class="btn btn-success" {% else %} class="btn btn-outline-success" {% endif %} href="?status=concluido">Concluídas</a>
+  </div>
   <table class="table table-striped table-hover mt-3">
     <thead>
       <tr>
