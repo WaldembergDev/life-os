@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from core.models import CustomUser
 
 class TipoEnum(models.TextChoices):
     PESSOAL = 'PESSOAL', 'Pessoal'
@@ -25,6 +26,7 @@ class Tarefa(models.Model):
     concluido_em = models.DateTimeField(null=True, blank=True)
     prazo = models.DateField(null=True, blank=True)
     com_lembrete = models.BooleanField(default=True)
+    criador = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.nome

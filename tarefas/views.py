@@ -10,7 +10,9 @@ def criar_tarefa(request):
     if request.method == 'POST':
         form = TarefaForm(request.POST)
         if form.is_valid():
-            form.save()
+            tarefa = form.save(commit=False)
+            tarefa.criador = request.user
+            tarefa.save()
             messages.success(request, 'Tarefa adicionada com sucesso!')
             return redirect('criar_tarefa')
     else:
