@@ -17,7 +17,7 @@ def criar_tarefa(request):
             tarefa.criador = request.user
             tarefa.save()
             messages.success(request, 'Tarefa adicionada com sucesso!')
-            return redirect('criar_tarefa')
+            return redirect('visualizar_tarefas')
     else:
         form = TarefaForm()
     context = {
