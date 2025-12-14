@@ -99,4 +99,4 @@ def concluir_tarefa(request, id_tarefa):
     tarefa.status = StatusEnum.CONCLUIDO
     tarefa.save()
     messages.success(request, 'Tarefa marcada com status concluída')
-    return redirect(reverse('visualizar_tarefas'))
+    return redirect(reverse('visualizar_tarefas') + '?status=concluido')
