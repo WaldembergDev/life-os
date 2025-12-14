@@ -6,6 +6,7 @@
     <a {% if request.GET.status == 'pendente' %}class="btn btn-secondary" {% else %}class="btn btn-outline-secondary"{% endif %} href="?status=pendente">Pendentes</a>
     <a {% if request.GET.status == 'andamento' %} class="btn btn-primary"{% else %} class="btn btn-outline-primary" {% endif %} href="?status=andamento">Andamento</a>
     <a {% if request.GET.status == 'concluido' %} class="btn btn-success" {% else %} class="btn btn-outline-success" {% endif %} href="?status=concluido">Concluídas</a>
+    <a {% if status == 'todas' %} class="btn btn-info" {% else %} class="btn btn-outline-info" {% endif %} href="?status=todas">Todas</a>
   </div>
   <table class="table table-striped table-hover mt-3">
     <thead>

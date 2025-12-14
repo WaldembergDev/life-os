@@ -43,11 +43,15 @@ def visualizar_tarefas(request):
     # verificando se existe um status válido selecionado
     if status and (obter_string_status_enum(status) is not None):
         tarefas = tarefas.filter(status=obter_string_status_enum(status))
+    else:
+        status = 'todas'
 
     context = {
         'tarefas': tarefas,
-        'form': TarefaForm()
+        'form': TarefaForm(),
+        'status': status 
     }
+
     return render(request, 'tarefas/visualizar_tarefas.html', context=context)
 
 def excluir_tarefa(request, id_tarefa):
