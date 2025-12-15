@@ -39,6 +39,13 @@ class Tarefa(models.Model):
             self.concluido_em = None
         super(Tarefa, self).save(*args, *kwargs)
 
+class Subtarefa(models.Model):
+    criado_em = models.DateTimeField(auto_now_add=True)
+    nome = models.CharField(max_length=120)
+    status = models.CharField(max_length=9, choices=StatusEnum.choices, default=StatusEnum.PENDENTE)
+    concluido_em = models.DateTimeField(blank=True, null=True)
+    tarefa = models.ForeignKey(Tarefa, on_delete=models.CASCADE)
+
 class Comentario(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
     comentario = models.CharField(max_length=255)

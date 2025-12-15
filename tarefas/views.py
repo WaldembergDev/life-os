@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render, get_object_or_404
-from .forms import TarefaForm
+from .forms import TarefaForm, SubtarefaForm
 from django.contrib import messages
 from .models import PrioridadeEnum, StatusEnum, Tarefa
 from django.http import JsonResponse
@@ -100,3 +100,21 @@ def concluir_tarefa(request, id_tarefa):
     tarefa.save()
     messages.success(request, 'Tarefa marcada com status concluída')
     return redirect(reverse('visualizar_tarefas') + '?status=concluido')
+
+
+def criar_subtarefa(request, id_tarefa):
+    tarefa = get_object_or_404(Tarefa, id=id_tarefa)
+    if request.method == 'POST':
+        form = SubtarefaForm(request.POST)
+        if form.is_valid():
+            subtarefa = form.save(commit=False)
+            subtarefa.tarefa = tarefa
+            subtarefa.save()
+            return redirect('visualizar_tarefas')
+    else:
+        subtarefa = SubtarefaForm()
+    
+    context = {
+        'form': subtarefa
+    }
+    return render(request, 'tarefas/criar_subtarefa.html', context)

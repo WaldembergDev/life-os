@@ -1,5 +1,5 @@
 from django import forms
-from .models import Tarefa, Comentario
+from .models import Tarefa, Comentario, Subtarefa
 
 class TarefaForm(forms.ModelForm):
     class Meta:
@@ -12,4 +12,14 @@ class TarefaForm(forms.ModelForm):
             'status': forms.Select(attrs={'class': 'form-select'}),
             'prazo': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'com_lembrete': forms.CheckboxInput(attrs={'class': 'form-check-input'})
+        }
+
+
+class SubtarefaForm(forms.ModelForm):
+    class Meta:
+        model = Subtarefa
+        fields = ['nome', 'status']
+        widgets = {
+            'nome': forms.TextInput(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-select'})
         }
