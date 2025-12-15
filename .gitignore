@@ -11,3 +11,6 @@ wheels/
 
 # database
 *.sqlite3
+
+# ignorando arquivos de variáveis de ambiente virtual
+.env
