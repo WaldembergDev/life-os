@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% block title %}Login{% endblock %}
 {% block content %}
-    <form action="{% url 'login' %}" method="POST">
+    <div class="d-flex justify-content-center align-items-center vh-100">
+    <form action="{% url 'login' %}" method="POST" class="vh-50 w-50 border rounded-3 shadow-lg p-5">
         {% csrf_token %}
         {% if form.non_field_errors %}
             <div class="alert alert-danger">
@@ -10,7 +11,7 @@
                 {% endfor %}
             </div>
         {% endif %}
-
+        <p class="text-center fs-1"><i class="bi bi-person-fill"></i></p>
         {% for field in form %}
             <div class="mb-3">
                 <label class="form-label" for="{{ field.id_for_label }}">
@@ -28,6 +29,7 @@
                 {% endif %}
             </div>
         {% endfor %}
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Logar</button>
     </form>
+    </div>
 {% endblock %}

@@ -11,7 +11,7 @@ def login(request):
         form = LoginForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data.get('email')
-            password = form.cleaned_data.get('password')
+            password = form.cleaned_data.get('senha')
             user = authenticate(request, email=email, password=password)
             if user:
                 as_login(request, user)
