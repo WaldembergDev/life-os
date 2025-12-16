@@ -7,8 +7,10 @@ from django.db.models import Case, When, IntegerField, Value
 from .models import StatusEnum
 from .utils import obter_string_status_enum
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required
 def criar_tarefa(request):
     if request.method == 'POST':
         form = TarefaForm(request.POST)
@@ -25,6 +27,7 @@ def criar_tarefa(request):
     }
     return render(request, 'tarefas/criar_tarefa.html', context=context)
 
+@login_required
 def visualizar_tarefas(request):
     status = request.GET.get('status')
     # ordenando do vencimento mais próximo para o mais antigo e urgência
@@ -54,12 +57,16 @@ def visualizar_tarefas(request):
 
     return render(request, 'tarefas/visualizar_tarefas.html', context=context)
 
+
+@login_required
 def excluir_tarefa(request, id_tarefa):
     tarefa = get_object_or_404(Tarefa, id=id_tarefa)
     tarefa.delete()
     messages.success(request, 'Tarefa excluída com sucesso!')
     return redirect('visualizar_tarefas')
 
+
+@login_required
 def api_consultar_tarefa(request, id_tarefa):
     tarefa = get_object_or_404(Tarefa, id=id_tarefa)
     dados = {
@@ -74,6 +81,7 @@ def api_consultar_tarefa(request, id_tarefa):
     }
     return JsonResponse(dados)
 
+@login_required
 def editar_tarefa(request, id_tarefa):
     tarefa = get_object_or_404(Tarefa, id=id_tarefa)
 
@@ -94,6 +102,8 @@ def editar_tarefa(request, id_tarefa):
     }
     return render(request, 'tarefas/criar_tarefa.html', context)
 
+
+@login_required
 def concluir_tarefa(request, id_tarefa):
     tarefa = get_object_or_404(Tarefa, id=id_tarefa)
     tarefa.status = StatusEnum.CONCLUIDO
@@ -102,6 +112,7 @@ def concluir_tarefa(request, id_tarefa):
     return redirect(reverse('visualizar_tarefas') + '?status=concluido')
 
 
+@login_required
 def criar_subtarefa(request, id_tarefa):
     tarefa = get_object_or_404(Tarefa, id=id_tarefa)
     if request.method == 'POST':

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login as as_login, logout as as_logout, authenticate
 from .forms import LoginForm
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def login(request):
@@ -26,6 +27,7 @@ def login(request):
     return render(request, 'core/login.html', context)
 
 
+@login_required
 def pagina_inicial(request):
     return render(request, 'core/pagina_inicial.html')
 
