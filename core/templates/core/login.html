@@ -1,35 +1,49 @@
 {% extends 'base.html' %}
 {% block title %}Login{% endblock %}
+
 {% block content %}
-    <div class="d-flex justify-content-center align-items-center vh-100">
-    <form action="{% url 'login' %}" method="POST" class="vh-50 w-50 border rounded-3 shadow-lg p-5">
-        {% csrf_token %}
-        {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-                {% for error in form.non_field_errors %}
-                    {{ error }}
-                {% endfor %}
+<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-12 col-md-6 col-lg-4">
+        
+        <form action="{% url 'login' %}" method="POST" class="border rounded-3 shadow-lg p-4 bg-white">
+            {% csrf_token %}
+            
+            <div class="text-center mb-4">
+                <i class="bi bi-person-circle display-1 text-primary"></i>
             </div>
-        {% endif %}
-        <p class="text-center fs-1"><i class="bi bi-person-fill"></i></p>
-        {% for field in form %}
-            <div class="mb-3">
-                <label class="form-label" for="{{ field.id_for_label }}">
-                    {{ field.label }}
-                </label>
 
-                {{ field }}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
 
-                {% if field.errors %}
-                    <div class="">
-                        {% for error in field.errors %}
-                            {{ error }}
-                        {% endfor %}
-                    </div>
-                {% endif %}
+            {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in field.errors %}
+                                <div><i class="bi bi-exclamation-circle"></i> {{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
             </div>
-        {% endfor %}
-        <button type="submit" class="btn btn-primary">Logar</button>
-    </form>
+        </form>
+        
     </div>
+</div>
 {% endblock %}

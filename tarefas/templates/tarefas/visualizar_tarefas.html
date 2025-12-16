@@ -1,291 +1,283 @@
 {% extends 'base.html' %}
 {% block title %}Visualizar tarefas{% endblock %}
+
 {% block content %}
-  <h1 class="text-center">Visualização de Tarefas</h1>
-  <div class="botoes-de-acao d-flex justify-content-between">
-    <div class="botoes-filtro">
-      <a {% if request.GET.status == 'pendente' %}class="btn btn-secondary" {% else %}class="btn btn-outline-secondary"{% endif %} href="?status=pendente">Pendentes</a>
-      <a {% if request.GET.status == 'andamento' %} class="btn btn-primary"{% else %} class="btn btn-outline-primary" {% endif %} href="?status=andamento">Andamento</a>
-      <a {% if request.GET.status == 'concluido' %} class="btn btn-success" {% else %} class="btn btn-outline-success" {% endif %} href="?status=concluido">Concluídas</a>
-      <a {% if status == 'todas' %} class="btn btn-info" {% else %} class="btn btn-outline-info" {% endif %} href="?status=todas">Todas</a>
+    <h1 class="text-center mb-4 mt-3">Visualização de Tarefas</h1>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <div class="btn-group flex-wrap" role="group">
+            <a {% if request.GET.status == 'pendente' %}class="btn btn-secondary"{% else %}class="btn btn-outline-secondary"{% endif %} href="?status=pendente">Pendentes</a>
+            <a {% if request.GET.status == 'andamento' %}class="btn btn-primary"{% else %}class="btn btn-outline-primary"{% endif %} href="?status=andamento">Andamento</a>
+            <a {% if request.GET.status == 'concluido' %}class="btn btn-success"{% else %}class="btn btn-outline-success"{% endif %} href="?status=concluido">Concluídas</a>
+            <a {% if status == 'todas' %}class="btn btn-info"{% else %}class="btn btn-outline-info"{% endif %} href="?status=todas">Todas</a>
+        </div>
+        
+        <div class="botao-adicao">
+            <a class="btn btn-primary rounded-circle shadow" href="#" data-bs-toggle="modal" data-bs-target="#modalCriarTarefa" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-plus-lg" style="font-size: 1.2rem;"></i>
+            </a>      
+        </div>
     </div>
-    <div class="botao-adicao">
-      <a class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#modalCriarTarefa"><i class="bi bi-plus-circle-fill"></i></a>      
+
+    <div class="table-responsive d-none d-md-block shadow-sm rounded">
+        <table class="table table-striped table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Criado em</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Prazo</th>
+                    <th scope="col">Lembrete</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tarefa in tarefas %}
+                <tr>
+                    <td>{{ tarefa.criado_em|date:"d/m/Y H:i" }}</td>
+                    <td>{{ tarefa.tipo }}</td>
+                    <td class="fw-bold">{{ tarefa.nome }}</td>
+                    <td>
+                        <span class="badge {% if tarefa.status == 'pendente' %}text-bg-secondary{% elif tarefa.status == 'andamento' %}text-bg-primary{% else %}text-bg-success{% endif %}">
+                            {{ tarefa.status|title }}
+                        </span>
+                    </td>
+                    <td>{{ tarefa.prazo|default:"Sem data" }}</td>
+                    <td>{% if tarefa.com_lembrete %}<i class="bi bi-bell-fill text-warning"></i> Sim{% else %}Não{% endif %}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">  
+                            <a href="{% url 'concluir_tarefa' tarefa.id %}" class="btn btn-success disable-on-submit" title="Concluir">
+                                <i class="bi bi-check-lg"></i>
+                            </a>
+                            <button type="button" class="btn btn-primary disable-on-submit" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao" title="Visualizar">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalEdicaoTarefa" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button type="button" class="btn btn-danger disable-on-submit abrirModalExclusao" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao" title="Excluir">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">Não existem tarefas para exibir.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-  </div>
-  <table class="table table-striped table-hover mt-3">
-    <thead>
-      <tr>
-        <th scope="col">Criado em</th>
-        <th scope="col">Tipo</th>
-        <th scope="col">Nome</th>
-        <th scope="col">Status</th>
-        <th scope="col">Prazo</th>
-        <th scope="col">Possui Lembrete?</th>
-        <th scope="col">Ações</th>
-      </tr>
-    </thead>
-    <tbody>
+
+    <div class="d-md-none">
         {% for tarefa in tarefas %}
-      <tr>
-        <th scope="row">{{ tarefa.criado_em|date:"d/m/Y H:i" }}</th>
-        <td>{{ tarefa.tipo }}</td>
-        <td>{{ tarefa.nome }}</td>
-        <td>{{ tarefa.status }}</td>
-        <td>{{ tarefa.prazo|default:"Sem data" }}</td>
-        <td>{% if tarefa.com_lembrete %}Sim{% else %}Não{% endif %}</td>
-        <td >
-            <div class="d-flex gap-1">  
-            <a href="{% url 'concluir_tarefa' tarefa.id %}" class="btn btn-success disable-on-submit">
-              <i class="bi bi-check-circle-fill"></i>
-            </a>
-            <a href="#" class="btn btn-primary disable-on-submit" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao">
-              <i class="bi bi-eye-fill"></i>
-            </a>
-            <a href="#" class="btn btn-secondary" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalEdicaoTarefa">
-              <i class="bi bi-pencil-fill"></i>
-            </a>
-            <a href="#" class="btn btn-danger disable-on-submit abrirModalExclusao" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao">
-              <i class="bi bi-x-circle-fill"></i>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan=7 class="text-center">Não existem tarefas cadastradas com as especificações selecionadas</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+        <div class="card mb-3 shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title text-truncate mb-0" style="max-width: 70%;">{{ tarefa.nome }}</h5>
+                    <span class="badge {% if tarefa.status == 'pendente' %}bg-secondary{% elif tarefa.status == 'andamento' %}bg-primary{% else %}bg-success{% endif %}">
+                        {{ tarefa.status|title }}
+                    </span>
+                </div>
+                
+                <p class="card-text small text-muted mb-1">
+                    <i class="bi bi-calendar-event"></i> Prazo: {{ tarefa.prazo|default:"Sem data" }}
+                </p>
+                <p class="card-text small text-muted mb-3">
+                    <i class="bi bi-tag"></i> Tipo: {{ tarefa.tipo }}
+                </p>
 
-  <div class="modal fade" id="modalVisualizacaoConfirmarAcao" tabindex="-1" aria-labelledby="confirmarAcao" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="tituloModal"></h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{% url 'concluir_tarefa' tarefa.id %}" class="btn btn-outline-success btn-sm disable-on-submit">
+                        <i class="bi bi-check-lg"></i>
+                    </a>
+                    <button type="button" class="btn btn-outline-primary btn-sm disable-on-submit" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalEdicaoTarefa">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-sm disable-on-submit abrirModalExclusao" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+            {% if tarefa.com_lembrete %}
+            <div class="card-footer bg-transparent border-top-0 pt-0">
+                <small class="text-warning"><i class="bi bi-bell-fill"></i> Lembrete Ativo</small>
+            </div>
+            {% endif %}
         </div>
-        <div class="modal-body">
-          <p>Criado em: <strong id="criadoEm"></strong></p>
-          <p>Tipo: <strong id="tipo"></strong></p>
-          <p>Status: <strong id="status"></strong></p>
-          <p>Prazo: <strong id="prazo"></strong></p>
-          <p>Prioridade: <strong id="prioridade"></strong></p>
-          <p>Concluído em: <strong id="concluidoEm"></strong></p>
+        {% empty %}
+        <div class="alert alert-light text-center" role="alert">
+            Não existem tarefas para exibir.
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-          <button type="button" class="d-none btn" id="botaoVisualizarConfirmarAcao">Excluir</button>
-        </div>
-      </div>
+        {% endfor %}
     </div>
-  </div>
 
-  <div class="modal fade" id="modalEdicaoTarefa" tabindex="-1" aria-labelledby="modalEdicaoTarefa" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      
-      <div class="modal-content">
-        <form id="formEdicaoTarefa" action="#" data-url-base="/tarefas/editar-tarefa/" method="POST">
-        {% csrf_token %}
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="tituloModalEdicao">Edição de tarefa</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+    <div class="modal fade" id="modalVisualizacaoConfirmarAcao" tabindex="-1" aria-labelledby="confirmarAcao" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="tituloModal"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Criado em: <strong id="criadoEm"></strong></p>
+                    <p>Tipo: <strong id="tipo"></strong></p>
+                    <p>Status: <strong id="status"></strong></p>
+                    <p>Prazo: <strong id="prazo"></strong></p>
+                    <p>Prioridade: <strong id="prioridade"></strong></p>
+                    <p>Concluído em: <strong id="concluidoEm"></strong></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="d-none btn" id="botaoVisualizarConfirmarAcao">Excluir</button>
+                </div>
+            </div>
         </div>
-        
-        <div class="modal-body">
-            {{ form }}          
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-          <button type="submit" class="btn btn-success" id="botaoEditarTarefa">Confirmar Alterações</button>
-        </div>
-        </form>
-      </div>
-    
     </div>
-  </div>
 
-  <!-- modal Criar tarefa -->
-  <div class="modal fade" id="modalCriarTarefa" tabindex="-1" aria-labelledby="modalCriarTarefaLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <form action="{% url 'criar_tarefa' %}" method="POST">
-        {% csrf_token %}
-      <div class="modal-header">
-        <h1 class="modal-title fs-5">Criar tarefa</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        
-        {{ form }}
-        
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-primary" id="btnCriarTarefa">Salvar</button>
-      </div>
-      </form>
+    <div class="modal fade" id="modalEdicaoTarefa" tabindex="-1" aria-labelledby="modalEdicaoTarefa" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="formEdicaoTarefa" action="#" data-url-base="/tarefas/editar-tarefa/" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="tituloModalEdicao">Edição de tarefa</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {{ form }}          
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-success" id="botaoEditarTarefa">Confirmar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-  {% csrf_token %}
+    <div class="modal fade" id="modalCriarTarefa" tabindex="-1" aria-labelledby="modalCriarTarefaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="{% url 'criar_tarefa' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Criar tarefa</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {{ form }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="btnCriarTarefa">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-  <script>
-    // Variável global para o token CSRF (lido uma vez)
-    const CSRF_TOKEN = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    
-    // Funções Auxiliares
-    function formatarData(dataApi){
-      const data = new Date(dataApi);
-      const opcoesDeData = {
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric',  
-        hour: '2-digit',  
-        minute: '2-digit',
-        hour12: false,  
-        timeZone: 'America/Sao_Paulo' 
-      };
-      const formatador = new Intl.DateTimeFormat('pt-BR', opcoesDeData);
-      return formatador.format(data);
-    }
-    
-    // Função Centralizada para FETCH
-    function consultarDadosTarefa(idTarefa) {
-      const urlConsulta = `/tarefas/api-consultar-tarefa/${idTarefa}`;
-      
-      return fetch(urlConsulta, {
-        headers: {
-            'Content-Type': 'application/json', 
-            'X-CSRFToken': CSRF_TOKEN,
+    {% csrf_token %}
+
+    <script>
+        const CSRF_TOKEN = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        function formatarData(dataApi){
+            if(!dataApi) return "Sem data";
+            const data = new Date(dataApi);
+            const opcoesDeData = {
+                day: '2-digit', month: '2-digit', year: 'numeric',  
+                hour: '2-digit', minute: '2-digit', hour12: false,  
+                timeZone: 'America/Sao_Paulo' 
+            };
+            return new Intl.DateTimeFormat('pt-BR', opcoesDeData).format(data);
         }
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Erro ao fazer requisição: ' + response.statusText);
+        
+        function consultarDadosTarefa(idTarefa) {
+            const urlConsulta = `/tarefas/api-consultar-tarefa/${idTarefa}`;
+            return fetch(urlConsulta, {
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN }
+            }).then(response => {
+                if (!response.ok) throw new Error('Erro ao fazer requisição');
+                return response.json();
+            });
         }
-        return response.json();
-      });
-    }
 
-    // --- Lógica de Visualização e Exclusão ---
-    
-    function exibirDetalhesDaTarefa(json, botaoAcionador, botaoConfirmacaoElemento){
-      const isExclusao = botaoAcionador.classList.contains('abrirModalExclusao');
-      const tituloModal = document.getElementById('tituloModal');
-      
-      // Mapeamento dos campos
-      document.getElementById('criadoEm').textContent = formatarData(json.criado_em);
-      document.getElementById('tipo').textContent = json.tipo;
-      document.getElementById('status').textContent = json.status;
-      document.getElementById('prioridade').textContent = json.prioridade;
+        function exibirDetalhesDaTarefa(json, botaoAcionador, botaoConfirmacaoElemento){
+            const isExclusao = botaoAcionador.classList.contains('abrirModalExclusao');
+            const tituloModal = document.getElementById('tituloModal');
+            
+            document.getElementById('criadoEm').textContent = formatarData(json.criado_em);
+            document.getElementById('tipo').textContent = json.tipo;
+            document.getElementById('status').textContent = json.status;
+            document.getElementById('prioridade').textContent = json.prioridade;
+            document.getElementById('concluidoEm').textContent = json.concluido_em ? formatarData(json.concluido_em) : "Não concluída";
+            document.getElementById('prazo').textContent = formatarData(json.prazo);
 
-      if (json.concluido_em){
-        document.getElementById('concluidoEm').textContent = formatarData(json.concluido_em);
-      }else{
-        document.getElementById('prazo').textContent = "Sem data";
-      }
+            if (isExclusao){
+                tituloModal.textContent = `Confirma a exclusão de "${json.nome}"?`;
+                botaoConfirmacaoElemento.classList.replace('d-none', 'btn-danger');
+                botaoConfirmacaoElemento.textContent = "Excluir";
+            } else {
+                tituloModal.textContent = `Detalhes: ${json.nome}`;
+                botaoConfirmacaoElemento.classList.add('d-none');
+                botaoConfirmacaoElemento.classList.remove('btn-danger');
+            }
+        }
 
-      if (json.prazo){
-        document.getElementById('prazo').textContent = formatarData(json.prazo);
-      }else{
-        document.getElementById('prazo').textContent = "Sem data";
-      }
+        function preencherFormularioEdicao(json, formElement) {
+            formElement.querySelector('#id_tipo').value = json.tipo;
+            formElement.querySelector('#id_prioridade').value = json.prioridade;
+            if (json.nome) formElement.querySelector('#id_nome').value = json.nome;
+            if (json.status) formElement.querySelector('#id_status').value = json.status;
+            formElement.querySelector('#id_prazo').value = json.prazo ? json.prazo : "";
+            document.getElementById('tituloModalEdicao').textContent = `Editando: ${json.nome}`;
+        }
 
-      // Lógica Condicional (Exclusão vs. Visualização)
-      if (isExclusao){
-        tituloModal.textContent = `Confirma a exclusão da tarefa ${json.nome}?`;
-        botaoConfirmacaoElemento.classList.replace('d-none', 'btn-danger');
-        botaoConfirmacaoElemento.textContent = "Excluir";
-      }else{
-        tituloModal.textContent = `Detalhes da tarefa ${json.nome}`;
-        botaoConfirmacaoElemento.classList.add('d-none');
-        botaoConfirmacaoElemento.classList.remove('btn-danger');
-      }
-    }
-    
-    // --- Lógica de Edição ---
+        document.addEventListener('DOMContentLoaded', (event)=>{
+            const modalVisualizacao = document.getElementById('modalVisualizacaoConfirmarAcao');
+            const botaoAcao = document.getElementById('botaoVisualizarConfirmarAcao');
 
-    // Função para preencher o formulário (Edição)
-    function preencherFormularioEdicao(json, formElement) {
-        // Preenche cada campo do formulário com o JSON retornado
-        formElement.querySelector('#id_tipo').value = json.tipo
-        formElement.querySelector('#id_prioridade').value = json.prioridade
-        if (json.nome) formElement.querySelector('#id_nome').value = json.nome;
-        if (json.status) formElement.querySelector('#id_status').value = json.status;
-        if (json.prazo){
-          formElement.querySelector('#id_prazo').value = json.prazo;
-        } else{
-          formElement.querySelector('#id_prazo').value = ""
-        }        
-        document.getElementById('tituloModalEdicao').textContent = `Editando: ${json.nome}`;
-    }
+            // 1. Prepara Modal de Visualização/Exclusão
+            modalVisualizacao.addEventListener('show.bs.modal', (event) => {
+                botaoAcao.classList.add('d-none'); // Reseta estado
+                const botao = event.relatedTarget;
+                const idTarefa = botao.dataset.tarefaId;
 
-    // --- Event Listeners Principais ---
+                botaoAcao.onclick = function() {
+                    window.location.href = `/tarefas/excluir-tarefa/${idTarefa}`;
+                };
+            });
 
-    document.addEventListener('DOMContentLoaded', (event)=>{
-      const modalVisualizacao = document.getElementById('modalVisualizacaoConfirmarAcao');
-      const botaoAcao = document.getElementById('botaoVisualizarConfirmarAcao');
+            // 2. Carrega dados ao abrir visualização
+            modalVisualizacao.addEventListener('shown.bs.modal', (event)=>{
+                const botao = event.relatedTarget;
+                const idTarefa = botao.dataset.tarefaId;
+                consultarDadosTarefa(idTarefa)
+                    .then(json => exibirDetalhesDaTarefa(json, botao, botaoAcao))
+                    .catch(err => console.error(err));
+            });
 
-      // 1. OTIMIZAÇÃO: Listener para LIMPEZA IMEDIATA (Anti-Flicker)
-      modalVisualizacao.addEventListener('show.bs.modal', (event) => {
-          // Garante que o botão de exclusão esteja escondido ANTES da animação
-          botaoAcao.classList.add('d-none');
-          botaoAcao.classList.remove('btn-danger');
-          
-          // Anexa o listener de exclusão AQUI (para ter acesso ao idTarefa correto)
-          const botao = event.relatedTarget;
-          const idTarefa = botao.dataset.tarefaId;
+            // 3. Modal de Edição
+            const modalEdicao = document.getElementById('modalEdicaoTarefa');
+            const formEdicao = document.getElementById('formEdicaoTarefa');
 
-          botaoAcao.onclick = function() {
-             window.location.href = `/tarefas/excluir-tarefa/${idTarefa}`;
-          };
-      });
+            modalEdicao.addEventListener('shown.bs.modal', (event)=>{
+                const botao = event.relatedTarget;
+                const tarefaId = botao.dataset.tarefaId;
+                const urlBase = formEdicao.dataset.urlBase;
+                formEdicao.action = `${urlBase}${tarefaId}/`;
 
-
-      // 2. Listener para PROCESSAMENTO (Fetch de Dados)
-      modalVisualizacao.addEventListener('shown.bs.modal', (event)=>{
-        const botao = event.relatedTarget;
-        const idTarefa = botao.dataset.tarefaId;
-
-        consultarDadosTarefa(idTarefa)
-        .then(json =>{
-          exibirDetalhesDaTarefa(json, botao, botaoAcao);
-        })
-        .catch(error =>{
-          console.log('Erro durante a requisição ', error);
-          alert('Falha ao carregar detalhes da tarefa.');
+                consultarDadosTarefa(tarefaId)
+                    .then(json => preencherFormularioEdicao(json, formEdicao))
+                    .catch(err => console.error(err));
+            });
         });
-        
-      });
-
-      // 3. Listener para Modal de Edição
-      const modalEdicao = document.getElementById('modalEdicaoTarefa');
-      const formEdicao = document.getElementById('formEdicaoTarefa');
-
-      modalEdicao.addEventListener('shown.bs.modal', (event)=>{
-        const botao = event.relatedTarget;
-        const tarefaId = botao.dataset.tarefaId;
-        
-        // 3a. Ajustar a URL de Ação do Formulário
-        const urlBase = formEdicao.dataset.urlBase;
-        formEdicao.action = `${urlBase}${tarefaId}/`;
-
-        // 3b. Fetch e Preenchimento
-        consultarDadosTarefa(tarefaId)
-        .then(json => {
-            preencherFormularioEdicao(json, formEdicao);
-        })
-        .catch(error => {
-            console.log('Erro durante a requisição de edição: ', error);
-            alert('Falha ao carregar dados da tarefa para edição.');
-        });
-      });
-
-      // modalCriarTarefa = document.getElementById('modalCriarTarefa');
-      // modalCriarTarefa.addEventListener('shown.bs.modal', function(event){
-      // }
-      // )
-    });
-  </script>
+    </script>
 {% endblock %}
