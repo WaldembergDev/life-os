@@ -39,7 +39,7 @@
                     <td>{{ tarefa.tipo }}</td>
                     <td class="fw-bold">{{ tarefa.nome }}</td>
                     <td>
-                        <span class="badge {% if tarefa.status == 'pendente' %}text-bg-secondary{% elif tarefa.status == 'andamento' %}text-bg-primary{% else %}text-bg-success{% endif %}">
+                        <span class="badge {% if tarefa.get_status_display == 'Pendente' %}text-bg-secondary{% elif tarefa.get_status_display == 'Andamento' %}text-bg-primary{% else %}text-bg-success{% endif %}">
                             {{ tarefa.status|title }}
                         </span>
                     </td>
