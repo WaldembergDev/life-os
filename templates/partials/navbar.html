@@ -52,7 +52,7 @@
                         </div>
                         <span class="fw-medium">
                             {% if user.is_authenticated %}
-                                {{ user.username|title }}
+                                {{ user.first_name|title }}
                             {% else %}
                                 Conta
                             {% endif %}

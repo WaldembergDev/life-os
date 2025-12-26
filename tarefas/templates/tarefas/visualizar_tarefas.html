@@ -6,10 +6,10 @@
 
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
         <div class="btn-group flex-wrap" role="group">
-            <a {% if request.GET.status == 'pendente' %}class="btn btn-secondary"{% else %}class="btn btn-outline-secondary"{% endif %} href="?status=pendente">Pendentes</a>
+            <a {% if request.GET.status == 'pendente' or status == 'pendente' %}class="btn btn-secondary"{% else %}class="btn btn-outline-secondary"{% endif %} href="?status=pendente">Pendentes</a>
             <a {% if request.GET.status == 'andamento' %}class="btn btn-primary"{% else %}class="btn btn-outline-primary"{% endif %} href="?status=andamento">Andamento</a>
             <a {% if request.GET.status == 'concluido' %}class="btn btn-success"{% else %}class="btn btn-outline-success"{% endif %} href="?status=concluido">Concluídas</a>
-            <a {% if status == 'todas' %}class="btn btn-info"{% else %}class="btn btn-outline-info"{% endif %} href="?status=todas">Todas</a>
+            <a {% if request.GET.status == 'todas' %}class="btn btn-info"{% else %}class="btn btn-outline-info"{% endif %} href="?status=todas">Todas</a>
         </div>
         
         <div class="botao-adicao">

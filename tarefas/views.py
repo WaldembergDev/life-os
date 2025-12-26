@@ -46,13 +46,14 @@ def visualizar_tarefas(request):
     # verificando se existe um status válido selecionado
     if status and (obter_string_status_enum(status) is not None):
         tarefas = tarefas.filter(status=obter_string_status_enum(status))
-    else:
-        status = 'todas'
+    if not status:
+        status = 'pendente'
+        tarefas = tarefas.filter(status=StatusEnum.PENDENTE.value)
 
     context = {
         'tarefas': tarefas,
         'form': TarefaForm(),
-        'status': status 
+        'status': status
     }
 
     return render(request, 'tarefas/visualizar_tarefas.html', context=context)
