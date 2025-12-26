@@ -4,7 +4,7 @@ from datetime import date
 from notificacoes.services import Whapi
 
 def obter_tarefas_atrasadas():
-    tarefas_atrasadas = Tarefa.objects.filter(prazo__lt=timezone.now().date()).exclude(status=StatusEnum.CONCLUIDO.value)
+    tarefas_atrasadas = Tarefa.objects.filter(prazo__lt=timezone.now().date()).exclude(status=StatusEnum.CONCLUIDO.value).exclude(com_lembrete=False)
     mensagem = "*Notificação de tarefas atrasadas*\n"
     if tarefas_atrasadas:
         for tarefa in tarefas_atrasadas:
