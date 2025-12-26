@@ -1,3 +1,4 @@
+from email.policy import default
 from pathlib import Path
 from decouple import config
 
@@ -17,6 +18,7 @@ INSTALLED_APPS = [
     'core',
     'tarefas',
     'widget_tweaks',
+    'notificacoes',
 ]
 
 MIDDLEWARE = [
@@ -99,3 +101,7 @@ MESSAGE_TAGS = {
 }
 
 LOGIN_URL = 'login'
+
+# Configurações da api WHAPI
+TOKEN_KEY_WHAPI = config('TOKEN_KEY_WHAPI', default=None)
+NUMERO_DESTINATARIO = config('NUMERO_DESTINATARIO', default=None)
