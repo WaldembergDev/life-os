@@ -38,6 +38,12 @@ class Tarefa(models.Model):
         else:
             self.concluido_em = None
         super(Tarefa, self).save(*args, *kwargs)
+    
+    @property
+    def esta_vencida(self):
+        if (self.prazo is not None) and self.status != StatusEnum.CONCLUIDO.value and (timezone.now().date() > self.prazo):
+            return True
+        return False
 
 class Subtarefa(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)

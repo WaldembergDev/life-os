@@ -34,7 +34,7 @@
             </thead>
             <tbody>
                 {% for tarefa in tarefas %}
-                <tr>
+                <tr class="{% if tarefa.esta_vencida %}table-danger{% endif %}">
                     <td>{{ tarefa.criado_em|date:"d/m/Y H:i" }}</td>
                     <td>{{ tarefa.tipo }}</td>
                     <td class="fw-bold">{{ tarefa.nome }}</td>

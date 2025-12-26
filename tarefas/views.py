@@ -8,6 +8,7 @@ from .models import StatusEnum
 from .utils import obter_string_status_enum
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 # Create your views here.
 @login_required
@@ -53,7 +54,7 @@ def visualizar_tarefas(request):
     context = {
         'tarefas': tarefas,
         'form': TarefaForm(),
-        'status': status
+        'status': status,
     }
 
     return render(request, 'tarefas/visualizar_tarefas.html', context=context)
