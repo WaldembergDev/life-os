@@ -30,4 +30,8 @@ class Whapi:
 
         response = requests.post(url, json=payload, headers=headers)
 
-        print(response.text)
+        try:
+            response.raise_for_status()
+            print(response.text)
+        except Exception as e:
+            print(f'Erro: {e}')
