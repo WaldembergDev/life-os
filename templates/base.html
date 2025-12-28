@@ -21,13 +21,8 @@
 
     <!-- container da aplicação-->
     <div class="container flex-grow-1 d-flex flex-column">
-  
-    {% block two_factor_body %}
-    
-        {% block content_wrapper %}
-            {% block content %} {% endblock %}
-        {% endblock %}
-
+    {% block content_wrapper %}
+      {% block content %} {% endblock %}
     {% endblock %}
     </div>
     <!-- scripts javascript -->
