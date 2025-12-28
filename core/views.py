@@ -33,4 +33,4 @@ def pagina_inicial(request):
 
 def logout(request):
     as_logout(request)
-    return redirect('login')
+    return redirect('two_factor:login')

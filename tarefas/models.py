@@ -37,7 +37,7 @@ class Tarefa(models.Model):
                 self.concluido_em = timezone.now()
         else:
             self.concluido_em = None
-        super(Tarefa, self).save(*args, *kwargs)
+        super(Tarefa, self).save(*args, **kwargs)
     
     @property
     def esta_vencida(self):

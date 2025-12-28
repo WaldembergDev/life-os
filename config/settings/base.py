@@ -19,6 +19,10 @@ INSTALLED_APPS = [
     'tarefas',
     'widget_tweaks',
     'notificacoes',
+    'django_otp', # django-two-factor
+    'django_otp.plugins.otp_static', # django-two-factor
+    'django_otp.plugins.otp_totp', # django-two-factor
+    'two_factor', # django-two-factor
 ]
 
 MIDDLEWARE = [
@@ -27,6 +31,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -100,8 +105,12 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
 
-LOGIN_URL = 'login'
+LOGIN_URL = 'two_factor:login'
+LOGIN_REDIRECT_URL = 'pagina_inicial'
 
 # Configurações da api WHAPI
 TOKEN_KEY_WHAPI = config('TOKEN_KEY_WHAPI', default=None)
 NUMERO_DESTINATARIO = config('NUMERO_DESTINATARIO', default=None)
+
+# Configuração de two_factor
+TWO_FACTOR_REMEMBER_COOKIE_AGE = 60*60*24*30*3

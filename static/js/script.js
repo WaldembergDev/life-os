@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
     // Script para dar espaço na tag de message do django
     const divMessages = document.getElementById('django-messages');
-    console.log(divMessages)
     if (divMessages && divMessages.textContent.trim() !== ''){
         divMessages.classList.remove('d-none');
     }

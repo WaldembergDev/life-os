@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "django>=6.0",
+    "django-two-factor-auth>=1.18.1",
     "django-widget-tweaks>=1.5.0",
     "mysqlclient>=2.2.7",
     "pandas>=2.3.3",
