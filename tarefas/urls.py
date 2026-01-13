@@ -7,5 +7,4 @@ urlpatterns = [
     path('excluir-tarefa/<int:id_tarefa>/', views.excluir_tarefa, name='excluir_tarefa'),
     path('api-consultar-tarefa/<int:id_tarefa>/', views.api_consultar_tarefa, name='api_consultar_tarefa'),
     path('editar-tarefa/<int:id_tarefa>/', views.editar_tarefa, name='editar_tarefa'),
-    path('concluir-tarefa/<int:id_tarefa>/', views.concluir_tarefa, name='concluir_tarefa')
 ]

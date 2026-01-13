@@ -47,9 +47,6 @@
                     <td>{% if tarefa.com_lembrete %}<i class="bi bi-bell-fill text-warning"></i> Sim{% else %}Não{% endif %}</td>
                     <td>
                         <div class="btn-group btn-group-sm">  
-                            <a href="{% url 'concluir_tarefa' tarefa.id %}" class="btn btn-success disable-on-submit" title="Concluir">
-                                <i class="bi bi-check-lg"></i>
-                            </a>
                             <button type="button" class="btn btn-primary disable-on-submit" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao" title="Visualizar">
                                 <i class="bi bi-eye"></i>
                             </button>
@@ -90,9 +87,6 @@
                 </p>
 
                 <div class="d-flex justify-content-end gap-2">
-                    <a href="{% url 'concluir_tarefa' tarefa.id %}" class="btn btn-outline-success btn-sm disable-on-submit">
-                        <i class="bi bi-check-lg"></i>
-                    </a>
                     <button type="button" class="btn btn-outline-primary btn-sm disable-on-submit" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao">
                         <i class="bi bi-eye"></i>
                     </button>
