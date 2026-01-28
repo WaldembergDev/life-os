@@ -34,8 +34,3 @@ class TarefaTestCase(TestCase):
         self.tarefa.status = StatusEnum.CONCLUIDO
         self.tarefa.save()
         self.assertFalse(self.tarefa.esta_vencida)
-        
-
-        
-
-

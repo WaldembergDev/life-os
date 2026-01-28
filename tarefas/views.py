@@ -59,6 +59,18 @@ def visualizar_tarefas(request):
 
     return render(request, 'tarefas/visualizar_tarefas.html', context=context)
 
+@login_required
+def detalhe_tarefa(request, id_tarefa):
+    tarefa = get_object_or_404(Tarefa, id=id_tarefa)
+    if request.method == 'POST':
+        pass
+    else:
+        form = TarefaForm(instance=tarefa)
+    context = {
+        'form': form
+    }
+    return render(request, 'tarefas/tarefa_detail.html', context)
+
 
 @login_required
 def excluir_tarefa(request, id_tarefa):
@@ -103,15 +115,6 @@ def editar_tarefa(request, id_tarefa):
         'tarefa': tarefa
     }
     return render(request, 'tarefas/criar_tarefa.html', context)
-
-
-# @login_required
-# def concluir_tarefa(request, id_tarefa):
-#     tarefa = get_object_or_404(Tarefa, id=id_tarefa)
-#     tarefa.status = StatusEnum.CONCLUIDO
-#     tarefa.save()
-#     messages.success(request, 'Tarefa marcada com status concluída')
-#     return redirect(reverse('visualizar_tarefas') + '?status=concluido')
 
 
 @login_required
