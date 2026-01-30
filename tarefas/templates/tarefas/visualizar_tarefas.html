@@ -46,10 +46,10 @@
                     <td>{{ tarefa.prazo|default:"Sem data" }}</td>
                     <td>{% if tarefa.com_lembrete %}<i class="bi bi-bell-fill text-warning"></i> Sim{% else %}Não{% endif %}</td>
                     <td>
-                        <div class="btn-group btn-group-sm">  
-                            <button type="button" class="btn btn-primary disable-on-submit" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao" title="Visualizar">
-                                <i class="bi bi-eye"></i>
-                            </button>
+                        <div class="btn-group btn-group-sm">
+                                <a href="{% url 'visualizar_tarefa' tarefa.id %}" type="button" class="btn btn-primary disable-on-submit">
+                                    <i class="bi bi-eye"></i>
+                                </a>
                             <button type="button" class="btn btn-secondary" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalEdicaoTarefa" title="Editar">
                                 <i class="bi bi-pencil"></i>
                             </button>

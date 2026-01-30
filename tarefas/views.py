@@ -105,14 +105,17 @@ def editar_tarefa(request, id_tarefa):
     return render(request, 'tarefas/criar_tarefa.html', context)
 
 
-# @login_required
-# def concluir_tarefa(request, id_tarefa):
-#     tarefa = get_object_or_404(Tarefa, id=id_tarefa)
-#     tarefa.status = StatusEnum.CONCLUIDO
-#     tarefa.save()
-#     messages.success(request, 'Tarefa marcada com status concluída')
-#     return redirect(reverse('visualizar_tarefas') + '?status=concluido')
-
+@login_required
+def visualizar_tarefa(request, id_tarefa):
+    tarefa = get_object_or_404(Tarefa, id=id_tarefa)
+    if request.method == 'POST':
+        pass
+    else:
+        form = TarefaForm(instance=tarefa)
+    context = {
+        'form': form
+    }
+    return render(request, 'tarefas/visualizar_tarefa.html', context=context)
 
 @login_required
 def criar_subtarefa(request, id_tarefa):
@@ -131,3 +134,5 @@ def criar_subtarefa(request, id_tarefa):
         'form': subtarefa
     }
     return render(request, 'tarefas/criar_subtarefa.html', context)
+
+# adicionado um comentário
