@@ -23,3 +23,11 @@ class SubtarefaForm(forms.ModelForm):
             'nome': forms.TextInput(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-select'})
         }
+
+class ComentarioForm(forms.ModelForm):
+    class Meta:
+        model = Comentario
+        fields = ['comentario']
+        widgets = {
+            'comentario': forms.TextInput(attrs={'class': 'form-control'})
+        }

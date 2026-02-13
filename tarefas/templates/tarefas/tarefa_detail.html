@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Tarefa: {{ tarefa.nome }}{% endblock %}
 {% block content %}
-    <a href="{% url 'visualizar_tarefas' %}" title="Voltar">
+    <a href="{% url 'tarefa_list' %}" title="Voltar">
         <i class="botao-voltar bi bi-arrow-left-circle-fill"></i>
     </a>
     
@@ -10,14 +11,14 @@
         <span class="badge text-bg-{% if form.instance.esta_vencida %}danger{% elif form.instance.status == "CONCLUIDO" %}success{% else %}secondary{% endif %}">{{ form.status.value }}</span>
         <span class="badge text-bg-secondary">{{ form.prioridade.value }}</span>
     </div>
-    <form method="post">
+    <form method="post" action="{% url 'detalhe_tarefa' form.instance.id %}">
     {% csrf_token %}
     
     <!-- Exibir erros gerais do formulário -->
     {{ form.non_field_errors }}
-
     {% for field in form %}
-        <div class="mb-3">
+        <div class="mb-3 row justify-content-md-center">
+            <div class="col-6">
             <label for="{{ field.id_for_label }}" class="form-label">
                 {{ field.label_tag }}
             </label>
@@ -30,10 +31,14 @@
             
             <!-- Exibe erros específicos do campo -->
             {{ field.errors }}
+            </div>
         </div>
     {% endfor %}
-    
-    <button class="btn btn-primary" type="submit">Atualizar</button>
+    <div class="row justify-content-md-center">
+        <div class="col-6">
+            <button class="btn btn-primary" type="submit">Atualizar</button>
+        </div>
+    </div>
 </form>
 
 {% endblock %}

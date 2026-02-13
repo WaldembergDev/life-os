@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Comentários{% endblock %}
+{% block content %}
+    <a href="{% url 'tarefa_list' %}" title="Voltar">
+        <i class="botao-voltar bi bi-arrow-left-circle-fill"></i>
+    </a>
+    <h1 class="text-center">{{ tarefa.nome }}</h1>
+    
+    <div class="botao-adicao d-flex justify-content-end">
+        <a class="btn btn-primary rounded-circle shadow" href="{% url 'comentario_create' tarefa.id %}"style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;" title="Adicionar Comentário">
+            <i class="bi bi-plus-lg" style="font-size: 1.2rem;"></i>
+        </a>      
+    </div>
+    <div class="mt-5">
+    {% for comentario in comentarios %}
+        <div class="card mb-3">
+            <div class="card-header">
+                {{ comentario.criado_em }}
+            </div>
+            <div class="card-body">
+                <p>{{ comentario.comentario }}</p>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    
+{% endblock %}
