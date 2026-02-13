@@ -63,7 +63,7 @@ def tarefa_list(request):
 def detalhe_tarefa(request, id_tarefa):
     tarefa = get_object_or_404(Tarefa, id=id_tarefa)
     if request.method == 'POST':
-        form = TarefaForm(request.POST)
+        form = TarefaForm(request.POST, instance=tarefa)
         if form.is_valid():
             form.save()
             messages.success(request, 'Tarefa atualizada com sucesso!')
@@ -81,7 +81,7 @@ def excluir_tarefa(request, id_tarefa):
     tarefa = get_object_or_404(Tarefa, id=id_tarefa)
     tarefa.delete()
     messages.success(request, 'Tarefa excluída com sucesso!')
-    return redirect('visualizar_tarefas')
+    return redirect('tarefa_list')
 
 
 @login_required

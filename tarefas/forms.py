@@ -29,5 +29,5 @@ class ComentarioForm(forms.ModelForm):
         model = Comentario
         fields = ['comentario']
         widgets = {
-            'comentario': forms.TextInput(attrs={'class': 'form-control'})
+            'comentario': forms.Textarea(attrs={'class': 'form-control'})
         }

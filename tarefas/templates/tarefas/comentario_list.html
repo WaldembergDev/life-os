@@ -18,10 +18,9 @@
                 {{ comentario.criado_em }}
             </div>
             <div class="card-body">
-                <p>{{ comentario.comentario }}</p>
+                {{ comentario.comentario|linebreaks }}
             </div>
         </div>
     {% endfor %}
     </div>
-    
 {% endblock %}
