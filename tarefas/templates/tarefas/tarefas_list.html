@@ -57,6 +57,13 @@
                             <a href="{% url 'comentario_list' tarefa.id %}" type="button" class="btn btn-secondary disable-on-submit" title='Comentários'>
                                 <i class="bi bi-chat-dots-fill botao-acao"></i>
                             </a>
+                        <div class="btn-group btn-group-sm">
+                                <a href="{% url 'visualizar_tarefa' tarefa.id %}" type="button" class="btn btn-primary disable-on-submit">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            <button type="button" class="btn btn-secondary" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalEdicaoTarefa" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </button>
                             <button type="button" class="btn btn-danger disable-on-submit abrirModalExclusao" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao" title="Excluir">
                                 <i class="bi bi-trash botao-acao"></i>
                             </button>

@@ -122,6 +122,20 @@ def editar_tarefa(request, id_tarefa):
     return render(request, 'tarefas/criar_tarefa.html', context)
 
 
+
+@login_required
+def visualizar_tarefa(request, id_tarefa):
+    tarefa = get_object_or_404(Tarefa, id=id_tarefa)
+    if request.method == 'POST':
+        pass
+    else:
+        form = TarefaForm(instance=tarefa)
+    context = {
+        'form': form
+    }
+    return render(request, 'tarefas/visualizar_tarefa.html', context=context)
+
+
 @login_required
 def criar_subtarefa(request, id_tarefa):
     tarefa = get_object_or_404(Tarefa, id=id_tarefa)
@@ -139,6 +153,7 @@ def criar_subtarefa(request, id_tarefa):
         'form': subtarefa
     }
     return render(request, 'tarefas/criar_subtarefa.html', context)
+
 
 @login_required
 def comentario_list(request, id_tarefa):
@@ -178,4 +193,3 @@ def comentario_delete(request, id_comentario):
     messages.success(request, 'Comentário excluído com sucesso!')
     # return redirect('comentario_list', comentario.tarefa.id )
     return JsonResponse({'mensagem': 'Comentário Excluído!'})
-

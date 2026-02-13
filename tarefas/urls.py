@@ -10,5 +10,6 @@ urlpatterns = [
     path('<int:id_tarefa>/', views.detalhe_tarefa, name="detalhe_tarefa"),
     path('<int:id_tarefa>/comentarios/', views.comentario_list, name='comentario_list'),
     path('<int:id_tarefa>/criar-comentario/', views.comentario_create, name='comentario_create'),
-    path('comentarios/<int:id_comentario>/deletar/', views.comentario_delete, name='comentario_delete')
+    path('comentarios/<int:id_comentario>/deletar/', views.comentario_delete, name='comentario_delete'),
+    path('visualizar-tarefa/<int:id_tarefa>/', views.visualizar_tarefa, name="visualizar_tarefa")
 ]
