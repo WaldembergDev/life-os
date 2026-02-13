@@ -9,6 +9,7 @@ from .utils import obter_string_status_enum
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 # Create your views here.
 @login_required
@@ -168,4 +169,13 @@ def comentario_create(request, id_tarefa):
         'tarefa': tarefa
     }
     return render(request, 'tarefas/comentario_create.html', context=context)
+
+@require_POST
+@login_required
+def comentario_delete(request, id_comentario):
+    comentario = get_object_or_404(Comentario, id=id_comentario)
+    comentario.delete()
+    messages.success(request, 'Comentário excluído com sucesso!')
+    # return redirect('comentario_list', comentario.tarefa.id )
+    return JsonResponse({'mensagem': 'Comentário Excluído!'})
 
