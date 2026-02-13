@@ -2,7 +2,10 @@
 {% load widget_tweaks %}
 {% block title %}Criar Tarefa{% endblock %}
 {% block content %}
-    <form action="{% url 'criar_tarefa' %}" method="post" class="border rounded p-5 shadow-sm">
+    <a href="{% url 'tarefa_list' %}" title="Voltar">
+        <i class="botao-voltar bi bi-arrow-left-circle-fill"></i>
+    </a>
+    <form action="{% url 'tarefa_create' %}" method="post" class="border rounded p-5 shadow-sm">
         {% csrf_token %}
         <h1 class="text-center">Criar Tarefa</h1>
         {% for field in form %}

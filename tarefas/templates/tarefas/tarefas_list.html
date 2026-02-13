@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Visualizar tarefas{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{% static 'tarefas/css/style.css' %}">
+{% endblock %}
 
 {% block content %}
     <h1 class="text-center mb-4 mt-3">Visualização de Tarefas</h1>
@@ -13,7 +17,7 @@
         </div>
         
         <div class="botao-adicao">
-            <a class="btn btn-primary rounded-circle shadow" href="#" data-bs-toggle="modal" data-bs-target="#modalCriarTarefa" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+            <a class="btn btn-primary rounded-circle shadow" href="{% url 'tarefa_create' %}" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;" title="Adicionar Tarefa">
                 <i class="bi bi-plus-lg" style="font-size: 1.2rem;"></i>
             </a>      
         </div>
@@ -46,6 +50,13 @@
                     <td>{{ tarefa.prazo|default:"Sem data" }}</td>
                     <td>{% if tarefa.com_lembrete %}<i class="bi bi-bell-fill text-warning"></i> Sim{% else %}Não{% endif %}</td>
                     <td>
+                        <div class="btn-group btn-group-sm">  
+                            <a href="{% url 'detalhe_tarefa' tarefa.id %}" type="button" class="btn btn-primary disable-on-submit" title="Detalhes/Editar">
+                                <i class="bi bi-eye botao-acao"></i>
+                            </a>
+                            <a href="{% url 'comentario_list' tarefa.id %}" type="button" class="btn btn-secondary disable-on-submit" title='Comentários'>
+                                <i class="bi bi-chat-dots-fill botao-acao"></i>
+                            </a>
                         <div class="btn-group btn-group-sm">
                                 <a href="{% url 'visualizar_tarefa' tarefa.id %}" type="button" class="btn btn-primary disable-on-submit">
                                     <i class="bi bi-eye"></i>
@@ -54,7 +65,7 @@
                                 <i class="bi bi-pencil"></i>
                             </button>
                             <button type="button" class="btn btn-danger disable-on-submit abrirModalExclusao" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao" title="Excluir">
-                                <i class="bi bi-trash"></i>
+                                <i class="bi bi-trash botao-acao"></i>
                             </button>
                         </div>
                     </td>
@@ -89,9 +100,6 @@
                 <div class="d-flex justify-content-end gap-2">
                     <button type="button" class="btn btn-outline-primary btn-sm disable-on-submit" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao">
                         <i class="bi bi-eye"></i>
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalEdicaoTarefa">
-                        <i class="bi bi-pencil"></i>
                     </button>
                     <button type="button" class="btn btn-outline-danger btn-sm disable-on-submit abrirModalExclusao" data-tarefa-id="{{ tarefa.id }}" data-bs-toggle="modal" data-bs-target="#modalVisualizacaoConfirmarAcao">
                         <i class="bi bi-trash"></i>
@@ -135,31 +143,10 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalEdicaoTarefa" tabindex="-1" aria-labelledby="modalEdicaoTarefa" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <form id="formEdicaoTarefa" action="#" data-url-base="/tarefas/editar-tarefa/" method="POST">
-                    {% csrf_token %}
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="tituloModalEdicao">Edição de tarefa</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        {{ form }}          
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                        <button type="submit" class="btn btn-success" id="botaoEditarTarefa">Confirmar Alterações</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <div class="modal fade" id="modalCriarTarefa" tabindex="-1" aria-labelledby="modalCriarTarefaLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <form action="{% url 'criar_tarefa' %}" method="POST">
+                <form action="{% url 'tarefa_create' %}" method="POST">
                     {% csrf_token %}
                     <div class="modal-header">
                         <h1 class="modal-title fs-5">Criar tarefa</h1>
@@ -225,15 +212,6 @@
             }
         }
 
-        function preencherFormularioEdicao(json, formElement) {
-            formElement.querySelector('#id_tipo').value = json.tipo;
-            formElement.querySelector('#id_prioridade').value = json.prioridade;
-            if (json.nome) formElement.querySelector('#id_nome').value = json.nome;
-            if (json.status) formElement.querySelector('#id_status').value = json.status;
-            formElement.querySelector('#id_prazo').value = json.prazo ? json.prazo : "";
-            document.getElementById('tituloModalEdicao').textContent = `Editando: ${json.nome}`;
-        }
-
         document.addEventListener('DOMContentLoaded', (event)=>{
             const modalVisualizacao = document.getElementById('modalVisualizacaoConfirmarAcao');
             const botaoAcao = document.getElementById('botaoVisualizarConfirmarAcao');
@@ -255,21 +233,6 @@
                 const idTarefa = botao.dataset.tarefaId;
                 consultarDadosTarefa(idTarefa)
                     .then(json => exibirDetalhesDaTarefa(json, botao, botaoAcao))
-                    .catch(err => console.error(err));
-            });
-
-            // 3. Modal de Edição
-            const modalEdicao = document.getElementById('modalEdicaoTarefa');
-            const formEdicao = document.getElementById('formEdicaoTarefa');
-
-            modalEdicao.addEventListener('shown.bs.modal', (event)=>{
-                const botao = event.relatedTarget;
-                const tarefaId = botao.dataset.tarefaId;
-                const urlBase = formEdicao.dataset.urlBase;
-                formEdicao.action = `${urlBase}${tarefaId}/`;
-
-                consultarDadosTarefa(tarefaId)
-                    .then(json => preencherFormularioEdicao(json, formEdicao))
                     .catch(err => console.error(err));
             });
         });

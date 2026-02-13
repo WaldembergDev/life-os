@@ -54,7 +54,7 @@ class Subtarefa(models.Model):
 
 class Comentario(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
-    comentario = models.CharField(max_length=255)
+    comentario = models.TextField(verbose_name='Comentário')
     tarefa = models.ForeignKey(Tarefa, on_delete=models.CASCADE)
 
     def __str__(self):

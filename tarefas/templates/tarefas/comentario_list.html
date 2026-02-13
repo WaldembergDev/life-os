@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block title %}Comentários{% endblock %}
+{% block content %}
+    <a href="{% url 'tarefa_list' %}" title="Voltar">
+        <i class="botao-voltar bi bi-arrow-left-circle-fill"></i>
+    </a>
+    <h1 class="text-center">{{ tarefa.nome }}</h1>
+    
+    <div class="botao-adicao d-flex justify-content-end">
+        <a class="btn btn-primary rounded-circle shadow" href="{% url 'comentario_create' tarefa.id %}"style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;" title="Adicionar Comentário">
+            <i class="bi bi-plus-lg" style="font-size: 1.2rem;"></i>
+        </a>      
+    </div>
+    <div class="mt-5">
+    {% for comentario in comentarios %}
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between">
+                <div>{{ comentario.criado_em }}</div>
+                <div>
+                    <button type="button"
+                            class="btn btn-danger disable-on-submit"
+                            data-comentario-id="{{ comentario.id }}"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalExclusaoComentario"
+                            title="Excluir">
+                        <i class="bi bi-trash botao-acao"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                {{ comentario.comentario|linebreaks }}
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalExclusaoComentario" tabindex="-1" aria-labelledby="Confirmação de Exclusão" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="titulo-modal">Exclusão de Comentário</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="corpo-modal"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btn-confirma-exclusao">Excluir</button>
+            </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        /* Obtendo o csrf_token*/
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+
+        document.addEventListener('DOMContentLoaded', () => {
+            botoes = document.querySelectorAll('.disable-on-submit');
+            botoes.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    const csrftoken = getCookie('csrftoken');
+                    const comentarioId = event.currentTarget.dataset.comentarioId;
+                    const apiURL = `/tarefas/comentarios/${comentarioId}/deletar/`
+
+                    const btnConfirmaExclusao = document.getElementById('btn-confirma-exclusao');
+
+                    btnConfirmaExclusao.addEventListener('click', function(){
+                        fetch(apiURL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrftoken
+                            },
+                        })
+                        .then(response => {
+                            if (!response.ok){
+                                throw new Error('Erro na rede');
+                            }
+                            window.location.href = window.location.href;
+                        })
+                        .catch(error =>{
+                            console.error('Erro: ', error);
+                        });
+                    });
+                });
+                
+            });
+        });
+    </script>
+{% endblock %}
