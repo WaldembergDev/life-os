@@ -5,21 +5,28 @@
     <a href="{% url 'tarefa_list' %}" title="Voltar">
         <i class="botao-voltar bi bi-arrow-left-circle-fill"></i>
     </a>
-    <form action="{% url 'tarefa_create' %}" method="post" class="border rounded p-5 shadow-sm">
-        {% csrf_token %}
-        <h1 class="text-center">Criar Tarefa</h1>
-        {% for field in form %}
-            <div class="form-group mb-3">
-                {{ field.label_tag }}
-                {{ field }}
-                {% if field.help_text %}
-                    <small class="form-text text-muted">{{ field.help_text }}</small>
-                {% endif %}
-                {% for error in field.errors %}
-                    <div class="invalid-feedback d-block">{{ error }}</div>
-                {% endfor %}
-            </div>
-        {% endfor %}
-        <input type="submit" class="btn btn-primary disable-on-submit" value="Criar Tarefa">
-    </form>
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <form action="{% url 'tarefa_create' %}" method="post" class="border rounded p-4 shadow-sm">
+                {% csrf_token %}
+                    <h1 class="text-center mb-4">Criar Tarefa</h1>
+                    {% for field in form %}
+                        <div class="mb-3">
+                            
+                            {{ field|add_label_class:"form-label fw-bold" }}
+                            {{ field }}
+                            {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                <div class="d-grid">
+                    <input type="submit" class="btn btn-lg btn-primary btn-custom disable-on-submit" value="Criar Tarefa">
+                </div>
+            </form>
+        </div>
+    </div>
 {% endblock %}

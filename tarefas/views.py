@@ -14,6 +14,7 @@ from django.views.decorators.http import require_POST
 # Create your views here.
 @login_required
 def tarefa_create(request):
+    """ View que cria uma tarefa """
     if request.method == 'POST':
         form = TarefaForm(request.POST)
         if form.is_valid():
@@ -31,6 +32,7 @@ def tarefa_create(request):
 
 @login_required
 def tarefa_list(request):
+    """ View que carrega todas as tarefas"""
     status = request.GET.get('status')
     # ordenando do vencimento mais próximo para o mais antigo e urgência
 

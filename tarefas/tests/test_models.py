@@ -5,7 +5,7 @@ from datetime import date, timedelta
 
 class TarefaTestCase(TestCase):
     def setUp(self):
-        self.usuario = CustomUser.objects.create_user(email='waldemberg@gmail.com', password='123456')
+        self.usuario = CustomUser.objects.create_user(email='waldemberg.pereira@outlook.com', password='123456')
         self.tarefa = Tarefa.objects.create(nome="Tarefa teste", criador=self.usuario)
     
     def test_atualizar_automaticame_data_concluido_em(self):
