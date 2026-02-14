@@ -14,21 +14,22 @@
     <div class="mt-5">
     {% for comentario in comentarios %}
         <div class="card mb-3">
-            <div class="card-header d-flex justify-content-between">
-                <div>{{ comentario.criado_em }}</div>
-                <div>
-                    <button type="button"
-                            class="btn btn-danger disable-on-submit"
-                            data-comentario-id="{{ comentario.id }}"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modalExclusaoComentario"
-                            title="Excluir">
-                        <i class="bi bi-trash botao-acao"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="card-body">
+            <div class="card-body d-flex flex-column justify-content-between gap-3">
                 {{ comentario.comentario|linebreaks }}
+                <div class="d-flex align-items-center gap-2">
+                    <div class='small'>{{ comentario.criado_em }}</div>
+                    <div>
+                        <button type="button"
+                                class="btn btn-danger disable-on-submit"
+                                data-comentario-id="{{ comentario.id }}"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalExclusaoComentario"
+                                title="Excluir">
+                            <i class="bi bi-trash botao-acao"></i>
+                        </button>
+                    </div>
+                </div>
+                
             </div>
         </div>
     {% endfor %}
@@ -75,6 +76,8 @@
             botoes = document.querySelectorAll('.disable-on-submit');
             botoes.forEach(button => {
                 button.addEventListener('click', function(event) {
+                    const corpoModal = document.getElementById('corpo-modal');
+                    corpoModal.textContent = "Confirma a exclusão do comentário?"
                     const csrftoken = getCookie('csrftoken');
                     const comentarioId = event.currentTarget.dataset.comentarioId;
                     const apiURL = `/tarefas/comentarios/${comentarioId}/deletar/`
