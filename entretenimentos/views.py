@@ -58,4 +58,21 @@ def entretenimento_detail(request, id_entretenimento) -> HttpResponse:
     context = {
         'form': form
     }
-    return render(request, 'entretenimentos/entretenimento_detail.html', context)    
+    return render(request, 'entretenimentos/entretenimento_detail.html', context)
+
+@login_required
+def entretenimento_delete(request, id_entretenimento) -> HttpResponse:
+    """
+    Deleta um entretenimento
+
+    Args:
+        request (_type_): O objeto HttpRequest do Django
+        id_entretenimento (_type_): O id do entretenimento selecionado
+
+    Returns:
+        HttpResponse: renderiza o template entretenimento_list.html
+    """
+    entretenimento = get_object_or_404(Entretenimento, id=id_entretenimento)
+    entretenimento.delete()
+    messages.success(request, 'Entretenimento deletado com sucesso!')
+    return redirect('entretenimento_list')

@@ -32,7 +32,14 @@
                     <a href="{% url 'entretenimento_detail' entretenimento.id %}" type="button" class="btn btn-primary disable-on-submit" title="Detalhes/Editar">
                         <i class="bi bi-eye botao-acao"></i>
                     </a>
-                    <button type="button" class="btn btn-danger disable-on-submit"  title="Excluir">
+                    <button type="button"
+                            id="botaoExcluirEntretenimento"
+                            class="btn btn-danger disable-on-submit"
+                            data-bs-toggle="modal"
+                            data-entretenimento-id="{{ entretenimento.id }}"
+                            data-entretenimento-descricao="{{ entretenimento.descricao}}"
+                            data-bs-target="#modalConfirmaExclusao"
+                            title="Excluir">
                         <i class="bi bi-trash botao-acao"></i>
                     </button>
                 </td>
@@ -43,4 +50,48 @@
         </tbody>
         </table>
     
+    
+    <!-- Estrutura do Modal -->
+    <div class="modal fade" id="modalConfirmaExclusao" tabindex="-1" aria-labelledby="modalConfirmaExclusaoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="meuModalExemploLabel">Confirmação de Exclusão</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p>Confirma a exclusão do entretenimento: <span class="fw-bold" id="conteudoEntretenimento"></span></p>
+        </div>
+        <div class="modal-footer">
+            <form method="POST" action="" id="formEntretenimentoExclusao">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Excluir</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </form>
+            
+        </div>
+        </div>
+    </div>
+    </div>
+    <script>
+        /* função que recebe um evento e confirma a exclusão do entretenimento*/
+        function confirmarExclusao(event){
+            let botao = event.relatedTarget;
+            let idEntretenimento = botao.getAttribute('data-entretenimento-id');
+            let descricaoEntretenimento = botao.getAttribute('data-entretenimento-descricao');
+            let conteudoEntretenimento = document.getElementById('conteudoEntretenimento');
+            conteudoEntretenimento.textContent = descricaoEntretenimento;
+            console.log(idEntretenimento);
+            let formulario = document.getElementById('formEntretenimentoExclusao');
+            formulario.action = `/entretenimentos/delete/${idEntretenimento}/`;
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+            /* Selecionando o modal */
+            let modalConfirmaExclusao = document.getElementById('modalConfirmaExclusao');
+            modalConfirmaExclusao.addEventListener('show.bs.modal', function(event){
+                confirmarExclusao(event);
+            });
+        });
+    </script>
 {% endblock %}
