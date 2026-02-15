@@ -1,17 +1,14 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from .forms import TarefaForm, SubtarefaForm, ComentarioForm
 from django.contrib import messages
-from .models import PrioridadeEnum, StatusEnum, Tarefa
+from .models import PrioridadeEnum, StatusEnum, Tarefa, Comentario
 from django.http import JsonResponse
-from django.db.models import Case, When, IntegerField, Value
-from .models import StatusEnum, Comentario
+from django.db.models import Case, When, IntegerField
 from .utils import obter_string_status_enum
-from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-# Create your views here.
+
 @login_required
 def tarefa_create(request):
     """ View que cria uma tarefa """
@@ -35,7 +32,6 @@ def tarefa_list(request):
     """ View que carrega todas as tarefas"""
     status = request.GET.get('status')
     # ordenando do vencimento mais próximo para o mais antigo e urgência
-
     tarefas = Tarefa.objects.annotate(
         tarefa_classificada = Case(
             When(prioridade=PrioridadeEnum.URGENTE, then=1),

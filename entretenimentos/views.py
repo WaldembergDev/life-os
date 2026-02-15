@@ -2,4 +2,8 @@ from django.shortcuts import render
 
 # Create your views here.
 def entretenimento_create(request):
-    pass
+    """ view que cria um entretenimento """
+    if request.method == 'POST':
+        pass
+    else:
+        pass
