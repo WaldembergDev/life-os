@@ -9,4 +9,5 @@ urlpatterns = [
     path('tarefas/', include('tarefas.urls')),
     path('core/', include('core.urls')),    
     path('', include(tf_urls)),
+    path('entretenimentos/', include('entretenimentos.urls'))
 ]

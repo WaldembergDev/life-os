@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'django_otp.plugins.otp_static', # django-two-factor
     'django_otp.plugins.otp_totp', # django-two-factor
     'two_factor', # django-two-factor
+    'entretenimientos',
 ]
 
 MIDDLEWARE = [
