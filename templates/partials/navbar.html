@@ -29,6 +29,12 @@
                         <i class="bi bi-list-check me-1"></i> Tarefas
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'entretenimento' in request.path %}active fw-semibold text-primary{% endif %}" 
+                       href="{% url 'entretenimento_list' %}">
+                        <i class="bi bi-joystick me-1"></i> Entretenimentos
+                    </a>
+                </li>
 
                 <li class="nav-item">
                     <a class="nav-link disabled" href="#">
