@@ -160,7 +160,7 @@ def criar_subtarefa(request, id_tarefa):
 @login_required
 def comentario_list(request, id_tarefa):
     tarefa = get_object_or_404(Tarefa, id=id_tarefa)
-    comentarios = Comentario.objects.filter(tarefa=tarefa)
+    comentarios = Comentario.objects.filter(tarefa=tarefa).order_by('-criado_em')
     context = {
         'comentarios': comentarios,
         'tarefa': tarefa,
@@ -193,5 +193,4 @@ def comentario_delete(request, id_comentario):
     comentario = get_object_or_404(Comentario, id=id_comentario)
     comentario.delete()
     messages.success(request, 'Comentário excluído com sucesso!')
-    # return redirect('comentario_list', comentario.tarefa.id )
-    return JsonResponse({'mensagem': 'Comentário Excluído!'})
+    return redirect('comentario_list', comentario.tarefa.id )

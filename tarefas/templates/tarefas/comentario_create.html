@@ -1,32 +1,40 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
 {% block title %}Criar comentário{% endblock %}
 {% block content %}
     <a href="{% url 'comentario_list' tarefa.id %}" title="Voltar">
         <i class="botao-voltar bi bi-arrow-left-circle-fill"></i>
     </a>
-    <h1 class="text-center">Comentário para a tarefa {{ tarefa.nome }}</h1>
-    <form class="p-4 border rounded-3 bg-light" method="POST" action="{% url 'comentario_create' tarefa.id %}">
-        {% csrf_token %}
-        {# Exibir erros gerais do formulário, se houver #}
-        {{ form.non_field_errors }}
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <h1 class="text-center mb-4">Comentário para a tarefa {{ tarefa.nome }}</h1>
+            <form class="p-4 border rounded-4 bg-light" method="POST" action="{% url 'comentario_create' tarefa.id %}">
+                {% csrf_token %}
+                {# Exibir erros gerais do formulário, se houver #}
+                {{ form.non_field_errors }}
 
-        {% for field in form %}
-            <div class="mb-3">
-                {# Exibir erros específicos do campo #}
-                {{ field.errors }}
-                
-                {# Renderizar o label (rótulo) #}
-                {{ field.label_tag }}
-                
-                {# Renderizar o input (campo de entrada) #}
-                {{ field }}
-                
-                {# Exibir texto de ajuda, se houver #}
-                {% if field.help_text %}
-                    <p class="help">{{ field.help_text|safe }}</p>
-                {% endif %}
-            </div>
-        {% endfor %}
-        <button type="submit" class="btn btn-primary">Criar</button>
-    </form>
+                {% for field in form %}
+                    <div class="mb-3">
+                        {# Exibir erros específicos do campo #}
+                        {{ field.errors }}
+                        
+                        {# Renderizar o label (rótulo) #}
+                        {{ field|add_label_class:"form-label fw-bold" }}
+                        
+                        {# Renderizar o input (campo de entrada) #}
+                        {{ field }}
+                        
+                        {# Exibir texto de ajuda, se houver #}
+                        {% if field.help_text %}
+                            <p class="help">{{ field.help_text|safe }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Criar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 {% endblock %}
