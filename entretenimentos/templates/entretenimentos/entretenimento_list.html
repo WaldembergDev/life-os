@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Entretenimentos{% endblock %}
+{% block content %}
+    {% for entretenimento in entretenimentos %}
+        <p>{{ entretenimento.descricao }}</p>
+    {% empty%}
+        <p>Não há entretenimentos cadastrados</p>
+    {% endfor %}
+{% endblock %}
