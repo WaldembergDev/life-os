@@ -14,7 +14,7 @@ class EntretenimentoTestCase(TestCase):
             criado_por=usuario
         )
     
-    def test_entretenimento_atualizar_automaticamente_concluido_em(self):
+    def test_entretenimento_atualizar_automaticamente_finalizado_em(self):
         # entretenimento = Entretenimento.objects.get(id=1)
         self.entretenimento.status = Entretenimento.Status.CONCLUIDO
         self.entretenimento.save()
@@ -25,3 +25,17 @@ class EntretenimentoTestCase(TestCase):
         self.entretenimento.status = Entretenimento.Status.PENDENTE
         self.entretenimento.save()
         self.assertIsNone(self.entretenimento.finalizado_em, msg="Finalizado em está preenchido!")
+    
+    def test_entretenimento_atualizar_automaticamente_iniciado_em(self):
+        # alterando o status
+        self.entretenimento.status = Entretenimento.Status.ANDAMENTO
+        self.entretenimento.save()
+        # verificando se iniciado em mudou automaticamente
+        self.assertIsNotNone(self.entretenimento.iniciado_em, msg="Inciado em está Vazio")
+        
+        # alterando o status
+        self.entretenimento.status = Entretenimento.Status.PENDENTE
+        self.entretenimento.save()
+        # verificando se iniciado em mudou automaticamente
+        self.assertIsNone(self.entretenimento.iniciado_em, msg="Iniciado em não está vazio!")
+        

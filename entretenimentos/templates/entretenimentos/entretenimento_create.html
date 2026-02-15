@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}Novo Entretenimento{% endblock %}
 {% block content %}
+    <a href="{% url 'entretenimento_list' %}" title="Voltar">
+        <i class="botao-voltar bi bi-arrow-left-circle-fill"></i>
+    </a>
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <h1 class="text-center mb-4">Novo Entretenimento</h1>

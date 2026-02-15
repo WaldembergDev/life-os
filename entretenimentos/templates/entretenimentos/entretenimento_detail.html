@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Entretenimento{% endblock %}
+{% block content %}
+    <a href="{% url 'entretenimento_list' %}" title="Voltar">
+        <i class="botao-voltar bi bi-arrow-left-circle-fill"></i>
+    </a>
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <h1 class="text-center mb-4">{{ form.instance.descricao }}</h1>
+            <form method="POST" action="." class="bg-white border rounded-4 p-4 shadow-sm">
+                {% csrf_token %}
+                <!-- Renderizando em modo apenas leitura o campo Criado em -->
+                <div class="mb-3">
+                    <label for="inputCriadoEm" class="form-label fw-bold">Criado em</label>
+                    <input id="inputCriadoEm" class="form-control bg-light" value="{{ form.instance.criado_em|date:"d/m/Y H:i" }}" readonly>
+                </div>
+                <!-- Renderizando os campos do formulário -->
+                {% for field in form %}
+                    <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}</label>
+                    {{ field }}
+                    </div>
+                {% endfor %}
+                <!-- Renderizando em modo apenas leitura o campo Iniciado em -->
+                <div class="mb-3">
+                    <label for="inputIniciadoEm" class="form-label fw-bold">Iniciado em</label>
+                    <input id="inputIniciadoEm" class="form-control bg-light" value="{{ form.instance.iniciado_em|date:'d/m/Y H:i'|default:'' }}" readonly>
+                </div>
+                <!-- Renderizando em modo apenas leitura o campo finalizado em -->
+                 <div class="mb-3">
+                    <label for="inputFinalizadoEm" class="form-label fw-bold">Finalizado em</label>
+                    <input id="InputFinalizadoEm" class="form-control bg-light" value="{{ form.instance.finalizado_em|date:'d/m/Y H:i'|default:'' }}" readonly>
+                 </div>
+                 <!-- Renderizando em modo apenas leitura o campo criado por -->
+                  <div class="mb-3">
+                    <label for="inputCriadoPor" class="form-label fw-bold">Criado por</label>
+                    <input id="inputCriadoPor" class="form-control bg-light" value="{{ form.instance.criado_por.first_name }}" readonly>
+                  </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

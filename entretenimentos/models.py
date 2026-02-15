@@ -20,16 +20,23 @@ class Entretenimento(models.Model):
     tipo = models.CharField(max_length=10, choices=Tipo.choices, verbose_name='Tipo')
     descricao = models.CharField(max_length=255, verbose_name='Descrição')
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDENTE)
-    iniciado_em = models.DateTimeField(null=True, blank=True)
-    finalizado_em = models.DateTimeField(null=True, blank=True)
-    criado_por = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    iniciado_em = models.DateTimeField(null=True, blank=True, editable=False)
+    finalizado_em = models.DateTimeField(null=True, blank=True, editable=False)
+    criado_por = models.ForeignKey(CustomUser, on_delete=models.CASCADE, editable=False)
 
     def __str__(self):
         return self.descricao
     
     def save(self, *args, **kwargs):
+        # verificações de status para atualizações atumáticas
         if self.status == Entretenimento.Status.CONCLUIDO:
             self.finalizado_em = timezone.now()
+            if self.iniciado_em is None:
+                self.iniciado_em = timezone.now()
         if self.status != Entretenimento.Status.CONCLUIDO:
             self.finalizado_em = None
+            if self.status == Entretenimento.Status.PENDENTE:
+                self.iniciado_em = None
+        if self.status == Entretenimento.Status.ANDAMENTO:
+            self.iniciado_em = timezone.now()
         super(Entretenimento, self).save(*args, **kwargs)

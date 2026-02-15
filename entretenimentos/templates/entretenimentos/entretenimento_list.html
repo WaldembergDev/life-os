@@ -1,9 +1,46 @@
 {% extends 'base.html' %}
 {% block title %}Entretenimentos{% endblock %}
 {% block content %}
-    {% for entretenimento in entretenimentos %}
-        <p>{{ entretenimento.descricao }}</p>
-    {% empty%}
-        <p>Não há entretenimentos cadastrados</p>
-    {% endfor %}
+    <h1 class="text-center mb-4">Entretenimentos</h1>
+    <div class="botao-adicao d-flex justify-content-end mb-3">
+        <a class="btn btn-primary rounded-circle shadow" href="{% url 'entretenimento_create' %}" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;" title="Adicionar Entretenimento">
+            <i class="bi bi-plus-lg" style="font-size: 1.2rem;"></i>
+        </a>      
+    </div>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+            <th scope="col">Criado em</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Descrição</th>
+            <th scope="col">Status</th>
+            <th scope="col">Adicionado por</th>
+            <th scope="col">Término</th>
+            <th scope="col">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entretenimento in entretenimentos %}
+                <tr>
+                <th scope="row">{{ entretenimento.criado_em|date:"d/m/Y" }}</th>
+                <td>{{ entretenimento.get_tipo_display }}</td>
+                <td>{{ entretenimento.descricao }}</td>
+                <td>{{ entretenimento.get_status_display }}</td>
+                <td>{{ entretenimento.criado_por.first_name }}</td>
+                <td>{{ entretenimento.finalizado_em|date:"d/m/Y" }}</td>
+                <td>
+                    <a href="{% url 'entretenimento_detail' entretenimento.id %}" type="button" class="btn btn-primary disable-on-submit" title="Detalhes/Editar">
+                        <i class="bi bi-eye botao-acao"></i>
+                    </a>
+                    <button type="button" class="btn btn-danger disable-on-submit"  title="Excluir">
+                        <i class="bi bi-trash botao-acao"></i>
+                    </button>
+                </td>
+                </tr>
+            {% empty%}
+                <th colspan="7" class="text-center">Não há entretenimentos cadastrados</th>
+            {% endfor %}
+        </tbody>
+        </table>
+    
 {% endblock %}
