@@ -1,3 +1,16 @@
+/* função que transforma a linha em um link, elimintando um botão para isso */
+function linhaClicavel(){
+    let linhas = document.querySelectorAll('.linha-click');
+    linhas.forEach(row => {
+        row.addEventListener('click', function(e){
+            if (!e.target.closest('button') && !e.target.closest('a')){
+                window.location = this.dataset.href;
+            }
+        })
+    })
+}
+
+
 document.addEventListener('DOMContentLoaded', function(){
     // Script para impedir duplo clique 
     const forms = document.querySelectorAll('form');
@@ -22,4 +35,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if (divMessages && divMessages.textContent.trim() !== ''){
         divMessages.classList.remove('d-none');
     }
+
+    /* Chamando a função que transforma uma linha em um link*/
+    linhaClicavel();    
 });

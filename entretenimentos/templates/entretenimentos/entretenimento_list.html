@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Entretenimentos{% endblock %}
 {% block content %}
     <h1 class="text-center mb-4">Entretenimentos</h1>
@@ -7,33 +8,29 @@
             <i class="bi bi-plus-lg" style="font-size: 1.2rem;"></i>
         </a>      
     </div>
-    <table class="table table-striped table-hover">
+    <table class="table table-striped table-hover align-middle">
         <thead>
             <tr>
-            <th scope="col">Criado em</th>
+            <th scope="col" class="d-none d-md-table-cell">Criado em</th>
             <th scope="col">Tipo</th>
             <th scope="col">Descrição</th>
             <th scope="col">Status</th>
-            <th scope="col">Adicionado por</th>
+            <th scope="col" class="d-none d-md-table-cell">Adicionado por</th>
             <th scope="col">Término</th>
             <th scope="col">Ações</th>
             </tr>
         </thead>
         <tbody>
             {% for entretenimento in entretenimentos %}
-                <tr>
-                <th scope="row">{{ entretenimento.criado_em|date:"d/m/Y" }}</th>
+                <tr class="linha-click" data-href="{% url 'entretenimento_detail' entretenimento.id %}" style="cursor: pointer;">
+                <th scope="row" class="d-none d-md-table-cell">{{ entretenimento.criado_em|date:"d/m/Y" }}</th>
                 <td>{{ entretenimento.get_tipo_display }}</td>
                 <td>{{ entretenimento.descricao }}</td>
                 <td>{{ entretenimento.get_status_display }}</td>
-                <td>{{ entretenimento.criado_por.first_name }}</td>
+                <td class="d-none d-md-table-cell">{{ entretenimento.criado_por.first_name }}</td>
                 <td>{{ entretenimento.finalizado_em|date:"d/m/Y" }}</td>
                 <td>
-                    <a href="{% url 'entretenimento_detail' entretenimento.id %}" type="button" class="btn btn-primary disable-on-submit" title="Detalhes/Editar">
-                        <i class="bi bi-eye botao-acao"></i>
-                    </a>
                     <button type="button"
-                            id="botaoExcluirEntretenimento"
                             class="btn btn-danger disable-on-submit"
                             data-bs-toggle="modal"
                             data-entretenimento-id="{{ entretenimento.id }}"
@@ -53,7 +50,7 @@
     
     <!-- Estrutura do Modal -->
     <div class="modal fade" id="modalConfirmaExclusao" tabindex="-1" aria-labelledby="modalConfirmaExclusaoLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
         <div class="modal-header">
             <h5 class="modal-title" id="meuModalExemploLabel">Confirmação de Exclusão</h5>
@@ -73,25 +70,5 @@
         </div>
     </div>
     </div>
-    <script>
-        /* função que recebe um evento e confirma a exclusão do entretenimento*/
-        function confirmarExclusao(event){
-            let botao = event.relatedTarget;
-            let idEntretenimento = botao.getAttribute('data-entretenimento-id');
-            let descricaoEntretenimento = botao.getAttribute('data-entretenimento-descricao');
-            let conteudoEntretenimento = document.getElementById('conteudoEntretenimento');
-            conteudoEntretenimento.textContent = descricaoEntretenimento;
-            console.log(idEntretenimento);
-            let formulario = document.getElementById('formEntretenimentoExclusao');
-            formulario.action = `/entretenimentos/delete/${idEntretenimento}/`;
-        }
-
-        document.addEventListener('DOMContentLoaded', function(){
-            /* Selecionando o modal */
-            let modalConfirmaExclusao = document.getElementById('modalConfirmaExclusao');
-            modalConfirmaExclusao.addEventListener('show.bs.modal', function(event){
-                confirmarExclusao(event);
-            });
-        });
-    </script>
+    <script src="{% static 'entretenimentos/js/script.js' %}"></script>
 {% endblock %}
